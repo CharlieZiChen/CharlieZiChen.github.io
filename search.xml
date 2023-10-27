@@ -186,144 +186,6 @@ subjonctif.</p>
       </tags>
   </entry>
   <entry>
-    <title>现在用不到但未来可能用得到的网页小配置</title>
-    <url>/2023/10/27/%E7%8E%B0%E5%9C%A8%E7%94%A8%E4%B8%8D%E5%88%B0%E4%BD%86%E6%9C%AA%E6%9D%A5%E5%8F%AF%E8%83%BD%E7%94%A8%E5%BE%97%E5%88%B0%E7%9A%84%E7%BD%91%E9%A1%B5%E5%B0%8F%E9%85%8D%E7%BD%AE/</url>
-    <content><![CDATA[<h1 id="note">Note</h1>
-<h2 id="用法1">用法1</h2>
-<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">{% note [class] [no-icon] [style] %}</span><br><span class="line">Any content (support inline tags too.io).</span><br><span class="line">{% endnote %}</span><br></pre></td></tr></table></figure>
-<table>
-<colgroup>
-<col style="width: 10%">
-<col style="width: 89%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: center;">名称</th>
-<th>用法</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: center;">class</td>
-<td>【可选】标识，不同的标识有不同的配色<br>（ default / primary /
-success / info / warning / danger ）</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">no-icon</td>
-<td>【可选】不显示 icon</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">style</td>
-<td>【可选】可以覆盖配置中的
-style<br>（simple/modern/flat/disabled）</td>
-</tr>
-</tbody>
-</table>
-<div class="note primary modern"><p>style-simple</p>
-</div>
-<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">{% note simple %}</span><br><span class="line">默认 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note default simple %}</span><br><span class="line">default 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note primary simple %}</span><br><span class="line">primary 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note success simple %}</span><br><span class="line">success 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note info simple %}</span><br><span class="line">info 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note warning simple %}</span><br><span class="line">warning 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note danger simple %}</span><br><span class="line">danger 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<div class="note simple"><p>默认 提示块标签</p>
-</div>
-<div class="note default simple"><p>default 提示块标签</p>
-</div>
-<div class="note primary simple"><p>primary 提示块标签</p>
-</div>
-<div class="note success simple"><p>success 提示块标签</p>
-</div>
-<div class="note info simple"><p>info 提示块标签</p>
-</div>
-<div class="note warning simple"><p>warning 提示块标签</p>
-</div>
-<div class="note danger simple"><p>danger 提示块标签</p>
-</div>
-<div class="note primary modern"><p>style-modern</p>
-</div>
-<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">{% note modern %}</span><br><span class="line">默认 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note default modern %}</span><br><span class="line">default 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note primary modern %}</span><br><span class="line">primary 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note success modern %}</span><br><span class="line">success 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note info modern %}</span><br><span class="line">info 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note warning modern %}</span><br><span class="line">warning 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note danger modern %}</span><br><span class="line">danger 提示块标签</span><br><span class="line">{% endnote %}</span><br></pre></td></tr></table></figure>
-<div class="note modern"><p>默认 提示块标签</p>
-</div>
-<div class="note default modern"><p>default 提示块标签</p>
-</div>
-<div class="note primary modern"><p>primary 提示块标签</p>
-</div>
-<div class="note success modern"><p>success 提示块标签</p>
-</div>
-<div class="note info modern"><p>info 提示块标签</p>
-</div>
-<div class="note warning modern"><p>warning 提示块标签</p>
-</div>
-<div class="note danger modern"><p>danger 提示块标签</p>
-</div>
-<div class="note primary modern"><p>style-flat</p>
-</div>
-<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">{% note flat %}</span><br><span class="line">默认 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note default flat %}</span><br><span class="line">default 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note primary flat %}</span><br><span class="line">primary 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note success flat %}</span><br><span class="line">success 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note info flat %}</span><br><span class="line">info 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note warning flat %}</span><br><span class="line">warning 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note danger flat %}</span><br><span class="line">danger 提示块标签</span><br><span class="line">{% endnote %}</span><br></pre></td></tr></table></figure>
-<div class="note flat"><p>默认 提示块标签</p>
-</div>
-<div class="note default flat"><p>default 提示块标签</p>
-</div>
-<div class="note primary flat"><p>primary 提示块标签</p>
-</div>
-<div class="note success flat"><p>success 提示块标签</p>
-</div>
-<div class="note info flat"><p>info 提示块标签</p>
-</div>
-<div class="note warning flat"><p>warning 提示块标签</p>
-</div>
-<div class="note danger flat"><p>danger 提示块标签</p>
-</div>
-<div class="note primary modern"><p>style-disabled</p>
-</div>
-<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">{% note disabled %}</span><br><span class="line">默认 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note default disabled %}</span><br><span class="line">default 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note primary disabled %}</span><br><span class="line">primary 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note success disabled %}</span><br><span class="line">success 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note info disabled %}</span><br><span class="line">info 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note warning disabled %}</span><br><span class="line">warning 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note danger disabled %}</span><br><span class="line">danger 提示块标签</span><br><span class="line">{% endnote %}</span><br></pre></td></tr></table></figure>
-<div class="note disabled"><p>默认 提示块标签</p>
-</div>
-<div class="note default disabled"><p>default 提示块标签</p>
-</div>
-<div class="note primary disabled"><p>primary 提示块标签</p>
-</div>
-<div class="note success disabled"><p>success 提示块标签</p>
-</div>
-<div class="note info disabled"><p>info 提示块标签</p>
-</div>
-<div class="note warning disabled"><p>warning 提示块标签</p>
-</div>
-<div class="note danger disabled"><p>danger 提示块标签</p>
-</div>
-<div class="note primary modern"><p>no-icon</p>
-</div>
-<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">{% note no-icon %}</span><br><span class="line">默认 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note default no-icon %}</span><br><span class="line">default 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note primary no-icon %}</span><br><span class="line">primary 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note success no-icon %}</span><br><span class="line">success 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note info no-icon %}</span><br><span class="line">info 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note warning no-icon %}</span><br><span class="line">warning 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note danger no-icon %}</span><br><span class="line">danger 提示块标签</span><br><span class="line">{% endnote %}</span><br></pre></td></tr></table></figure>
-<div class="note no-icon simple"><p>默认 提示块标签</p>
-</div>
-<div class="note default no-icon simple"><p>default 提示块标签</p>
-</div>
-<div class="note primary no-icon simple"><p>primary 提示块标签</p>
-</div>
-<div class="note success no-icon simple"><p>success 提示块标签</p>
-</div>
-<div class="note info no-icon simple"><p>info 提示块标签</p>
-</div>
-<div class="note warning no-icon simple"><p>warning 提示块标签</p>
-</div>
-<div class="note danger no-icon simple"><p>danger 提示块标签</p>
-</div>
-<h2 id="用法2-自定义看这里">用法2 自定义看这里</h2>
-<div class="flink"><div class="flink-name">自定义icon</div> <div class="flink-list">
-          <div class="flink-list-item">
-            <a href="https://butterfly.js.org/posts/4aa8abbe/#Note-Bootstrap-Callout" title="自定义icon" target="_blank">
-              <div class="flink-item-icon">
-                <img class="no-lightbox" src="null" onerror="this.onerror=null;this.src=&quot;/img/friend_404.gif&quot;" alt="自定义icon">
-              </div>
-              <div class="flink-item-name">自定义icon</div> 
-              <div class="flink-item-desc" title="null">null</div>
-            </a>
-          </div></div></div>
-]]></content>
-      <categories>
-        <category>小配置</category>
-      </categories>
-      <tags>
-        <tag>网页配置</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>线性代数1</title>
     <url>/2023/10/27/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B01/</url>
     <content><![CDATA[<h2 id="applications-linéaires">Applications linéaires</h2>
@@ -854,6 +716,144 @@ ligne.</p></li>
       <tags>
         <tag>大二上</tag>
         <tag>数学</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>现在用不到但未来可能用得到的网页小配置</title>
+    <url>/2023/10/27/%E7%8E%B0%E5%9C%A8%E7%94%A8%E4%B8%8D%E5%88%B0%E4%BD%86%E6%9C%AA%E6%9D%A5%E5%8F%AF%E8%83%BD%E7%94%A8%E5%BE%97%E5%88%B0%E7%9A%84%E7%BD%91%E9%A1%B5%E5%B0%8F%E9%85%8D%E7%BD%AE/</url>
+    <content><![CDATA[<h1 id="note">Note</h1>
+<h2 id="用法1">用法1</h2>
+<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">{% note [class] [no-icon] [style] %}</span><br><span class="line">Any content (support inline tags too.io).</span><br><span class="line">{% endnote %}</span><br></pre></td></tr></table></figure>
+<table>
+<colgroup>
+<col style="width: 10%">
+<col style="width: 89%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">名称</th>
+<th>用法</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">class</td>
+<td>【可选】标识，不同的标识有不同的配色<br>（ default / primary /
+success / info / warning / danger ）</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">no-icon</td>
+<td>【可选】不显示 icon</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">style</td>
+<td>【可选】可以覆盖配置中的
+style<br>（simple/modern/flat/disabled）</td>
+</tr>
+</tbody>
+</table>
+<div class="note primary modern"><p>style-simple</p>
+</div>
+<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">{% note simple %}</span><br><span class="line">默认 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note default simple %}</span><br><span class="line">default 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note primary simple %}</span><br><span class="line">primary 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note success simple %}</span><br><span class="line">success 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note info simple %}</span><br><span class="line">info 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note warning simple %}</span><br><span class="line">warning 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note danger simple %}</span><br><span class="line">danger 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<div class="note simple"><p>默认 提示块标签</p>
+</div>
+<div class="note default simple"><p>default 提示块标签</p>
+</div>
+<div class="note primary simple"><p>primary 提示块标签</p>
+</div>
+<div class="note success simple"><p>success 提示块标签</p>
+</div>
+<div class="note info simple"><p>info 提示块标签</p>
+</div>
+<div class="note warning simple"><p>warning 提示块标签</p>
+</div>
+<div class="note danger simple"><p>danger 提示块标签</p>
+</div>
+<div class="note primary modern"><p>style-modern</p>
+</div>
+<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">{% note modern %}</span><br><span class="line">默认 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note default modern %}</span><br><span class="line">default 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note primary modern %}</span><br><span class="line">primary 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note success modern %}</span><br><span class="line">success 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note info modern %}</span><br><span class="line">info 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note warning modern %}</span><br><span class="line">warning 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note danger modern %}</span><br><span class="line">danger 提示块标签</span><br><span class="line">{% endnote %}</span><br></pre></td></tr></table></figure>
+<div class="note modern"><p>默认 提示块标签</p>
+</div>
+<div class="note default modern"><p>default 提示块标签</p>
+</div>
+<div class="note primary modern"><p>primary 提示块标签</p>
+</div>
+<div class="note success modern"><p>success 提示块标签</p>
+</div>
+<div class="note info modern"><p>info 提示块标签</p>
+</div>
+<div class="note warning modern"><p>warning 提示块标签</p>
+</div>
+<div class="note danger modern"><p>danger 提示块标签</p>
+</div>
+<div class="note primary modern"><p>style-flat</p>
+</div>
+<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">{% note flat %}</span><br><span class="line">默认 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note default flat %}</span><br><span class="line">default 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note primary flat %}</span><br><span class="line">primary 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note success flat %}</span><br><span class="line">success 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note info flat %}</span><br><span class="line">info 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note warning flat %}</span><br><span class="line">warning 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note danger flat %}</span><br><span class="line">danger 提示块标签</span><br><span class="line">{% endnote %}</span><br></pre></td></tr></table></figure>
+<div class="note flat"><p>默认 提示块标签</p>
+</div>
+<div class="note default flat"><p>default 提示块标签</p>
+</div>
+<div class="note primary flat"><p>primary 提示块标签</p>
+</div>
+<div class="note success flat"><p>success 提示块标签</p>
+</div>
+<div class="note info flat"><p>info 提示块标签</p>
+</div>
+<div class="note warning flat"><p>warning 提示块标签</p>
+</div>
+<div class="note danger flat"><p>danger 提示块标签</p>
+</div>
+<div class="note primary modern"><p>style-disabled</p>
+</div>
+<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">{% note disabled %}</span><br><span class="line">默认 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note default disabled %}</span><br><span class="line">default 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note primary disabled %}</span><br><span class="line">primary 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note success disabled %}</span><br><span class="line">success 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note info disabled %}</span><br><span class="line">info 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note warning disabled %}</span><br><span class="line">warning 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note danger disabled %}</span><br><span class="line">danger 提示块标签</span><br><span class="line">{% endnote %}</span><br></pre></td></tr></table></figure>
+<div class="note disabled"><p>默认 提示块标签</p>
+</div>
+<div class="note default disabled"><p>default 提示块标签</p>
+</div>
+<div class="note primary disabled"><p>primary 提示块标签</p>
+</div>
+<div class="note success disabled"><p>success 提示块标签</p>
+</div>
+<div class="note info disabled"><p>info 提示块标签</p>
+</div>
+<div class="note warning disabled"><p>warning 提示块标签</p>
+</div>
+<div class="note danger disabled"><p>danger 提示块标签</p>
+</div>
+<div class="note primary modern"><p>no-icon</p>
+</div>
+<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">{% note no-icon %}</span><br><span class="line">默认 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note default no-icon %}</span><br><span class="line">default 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note primary no-icon %}</span><br><span class="line">primary 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note success no-icon %}</span><br><span class="line">success 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note info no-icon %}</span><br><span class="line">info 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note warning no-icon %}</span><br><span class="line">warning 提示块标签</span><br><span class="line">{% endnote %}</span><br><span class="line"></span><br><span class="line">{% note danger no-icon %}</span><br><span class="line">danger 提示块标签</span><br><span class="line">{% endnote %}</span><br></pre></td></tr></table></figure>
+<div class="note no-icon simple"><p>默认 提示块标签</p>
+</div>
+<div class="note default no-icon simple"><p>default 提示块标签</p>
+</div>
+<div class="note primary no-icon simple"><p>primary 提示块标签</p>
+</div>
+<div class="note success no-icon simple"><p>success 提示块标签</p>
+</div>
+<div class="note info no-icon simple"><p>info 提示块标签</p>
+</div>
+<div class="note warning no-icon simple"><p>warning 提示块标签</p>
+</div>
+<div class="note danger no-icon simple"><p>danger 提示块标签</p>
+</div>
+<h2 id="用法2-自定义看这里">用法2 自定义看这里</h2>
+<div class="flink"><div class="flink-name">自定义icon</div> <div class="flink-list">
+          <div class="flink-list-item">
+            <a href="https://butterfly.js.org/posts/4aa8abbe/#Note-Bootstrap-Callout" title="自定义icon" target="_blank">
+              <div class="flink-item-icon">
+                <img class="no-lightbox" src="null" onerror="this.onerror=null;this.src=&quot;/img/friend_404.gif&quot;" alt="自定义icon">
+              </div>
+              <div class="flink-item-name">自定义icon</div> 
+              <div class="flink-item-desc" title="null">null</div>
+            </a>
+          </div></div></div>
+]]></content>
+      <categories>
+        <category>小配置</category>
+      </categories>
+      <tags>
+        <tag>网页配置</tag>
       </tags>
   </entry>
 </search>
