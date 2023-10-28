@@ -186,6 +186,117 @@ subjonctif.</p>
       </tags>
   </entry>
   <entry>
+    <title>Unity hololens2开发(一):准备工作与项目部署</title>
+    <url>/2023/10/28/Unity-hololens2%E5%BC%80%E5%8F%91-%E4%B8%80-%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C%E4%B8%8E%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2/</url>
+    <content><![CDATA[<h1 id="准备工作">准备工作</h1>
+<h2 id="unity版本要求">unity版本要求</h2>
+<p>可以选择尽量高的版本</p>
+<h2 id="visualstudio-安装及c环境配置配置">VisualStudio
+安装及C#环境配置配置</h2>
+<ol type="1">
+<li>下载：<a href="https://visualstudio.microsoft.com/zh-hans/downloads/">下载地址</a></li>
+<li>安装过程中，在<code>工作负载</code>界面勾选<code>使用C++的桌面开发</code>、<code>使用Unity的游戏开发（勾选"Visual Studio Tools for Unity"和"C#和VisualBasic"）</code>和`<code>通用Windows平台开发</code>，在右边的可选框勾选<code>USB设备连接性</code>和<code>C++(v142)通用Windows平台工具</code>；在<code>单个组件</code>搜索<code>Windows SDK</code>，下载所有版本的sdk</li>
+<li>打开unity，新建一个项目</li>
+</ol>
+<ul>
+<li>安装插件<code>Visual Studio Editor</code>：
+<ul>
+<li><code>Windows</code> <span class="math inline"><mjx-container class="MathJax" jax="SVG"><svg style="vertical-align: -0.025ex;" xmlns="http://www.w3.org/2000/svg" width="2.262ex" height="1.181ex" role="img" focusable="false" viewBox="0 -511 1000 522"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mo"><path data-c="2192" d="M56 237T56 250T70 270H835Q719 357 692 493Q692 494 692 496T691 499Q691 511 708 511H711Q720 511 723 510T729 506T732 497T735 481T743 456Q765 389 816 336T935 261Q944 258 944 250Q944 244 939 241T915 231T877 212Q836 186 806 152T761 85T740 35T732 4Q730 -6 727 -8T711 -11Q691 -11 691 0Q691 7 696 25Q728 151 835 230H70Q56 237 56 250Z"></path></g></g></g></svg></mjx-container></span>
+<code>Package Manager</code></li>
+<li>将<code>+</code>号旁边的<code>In Project</code>改为<code>Unity Registry</code>，然后在左边下拉菜单中找到<code>Visual Studio Editor</code>，点击<code>Install</code>安装</li>
+</ul></li>
+<li>设置外部工具：
+<ul>
+<li>点击菜单栏<code>Edit</code>→<code>Preferences…</code></li>
+<li>打开<code>Preferences</code>偏好设置界面，将<code>External Tools</code>中外部脚本编辑器<code>External Script Editor</code>设置为<code>visual studio 2022</code>（改成自己使用的版本）</li>
+<li>后点击下方
+重新生成项目文件<code>Regenerate project files</code>按钮，会重新生成解决方案文件跟项目文件</li>
+</ul></li>
+</ul>
+<h2 id="mrft下载">MRFT下载</h2>
+<div class="note warning flat"><p>该方法目前只适用于Windows系统</p>
+</div>
+<ol type="1">
+<li>简介：微软公司推出的用来导入<code>MRTK工具包</code>的快捷化方式，其最大好处是可以直观地看到所有MR应用开发所需要的工具包集合，并且可以选择加载指定版本</li>
+<li>下载：<a href="https://www.microsoft.com/en-us/download/details.aspx?id=102778">下载地址</a></li>
+</ol>
+]]></content>
+      <categories>
+        <category>hololens2 开发</category>
+      </categories>
+      <tags>
+        <tag>unity</tag>
+        <tag>hololens2</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Unity play模式下正常,打包时报错:Cannot build player while editor is importing assets or compiling scripts</title>
+    <url>/2023/10/28/Unity-play%E6%A8%A1%E5%BC%8F%E4%B8%8B%E6%AD%A3%E5%B8%B8-%E6%89%93%E5%8C%85%E6%97%B6%E6%8A%A5%E9%94%99-Cannot-build-player-while-editor-is-importing-assets-or-compiling-scripts/</url>
+    <content><![CDATA[<h1 id="问题描述">问题描述</h1>
+<p>今天build过程中，在build过程中出现：</p>
+<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">Cannot build player while editor is importing assets or compling scripts.</span><br></pre></td></tr></table></figure>
+<p>并且在build完成后，控制台报错如下：</p>
+<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">Library\PackageCache\com.microsoft.mixedreality.toolkit.foundation@f2323a9b7aec\Providers\WindowsMixedReality\XRSDK\WindowsMixedRealityDeviceManager.cs(404,128): error CS0104: 'Handedness' is an ambiguous reference between 'Microsoft.MixedReality.Input.Handedness' and 'Microsoft.MixedReality.Toolkit.Utilities.Handedness'</span><br></pre></td></tr></table></figure>
+<h1 id="问题分析">问题分析</h1>
+<p>可以看到在build过程中出现<span style="color:#F08080">Cannot build
+player while editor is importing assets or compling scripts.</span>
+可得，由两种情况：一是：<span style="color:#F08080">editor is importing
+assets </span>;另一种是<span style="color:#F08080">compling scripts
+出现错误 </span></p>
+<h2 id="editor-is-importing-assets">editor is importing assets</h2>
+<div class="note info flat"><p>这种一般都比较好解决，出现原因是:
+引用UnityEditor的文件必须放到Editor文件夹中（好像只要有就行）</p>
+</div>
+<p>解决办法：</p>
+<p>创建一个Editor文件夹，把用到UnityEditor及其API的脚本放到Editor文件夹下面</p>
+<h2 id="compling-scripts-出现错误">compling scripts 出现错误</h2>
+<p>我这里的原因是：</p>
+<p><code>Handedness</code>是一个模糊的引用，存在两个可能的选择：<code>Microsoft.MixedReality.Input.Handedness</code>
+和 <code>Microsoft.MixedReality.Toolkit.Utilities.Handedness</code></p>
+<p>出错的一行如下：</p>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">WindowsMixedRealityXRSDKGGVHand detectedController = <span class="keyword">new</span> WindowsMixedRealityXRSDKGGVHand(TrackingState.NotTracked, Handedness.None, inputSource);</span><br></pre></td></tr></table></figure>
+<p>但其实查阅官网发现：</p>
+<p><code>WindowsMixedRealityXRSDKGGVHand</code>有四个参数：</p>
+<table>
+<thead>
+<tr class="header">
+<th>Parameters</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>trackingState</code></td>
+<td>TrackingState</td>
+</tr>
+<tr class="even">
+<td><code>controllerHandedness</code></td>
+<td>Handedness</td>
+</tr>
+<tr class="odd">
+<td><code>inputSource</code></td>
+<td>IMixedRealityInputSource</td>
+</tr>
+<tr class="even">
+<td><code>interactions</code></td>
+<td>MixedRealityInteractionMapping[]</td>
+</tr>
+</tbody>
+</table>
+<p>然后点到<code>Handedness</code>其实发现它的命名空间为：<code>Microsoft.MixedReality.Toolkit.Utilities</code>，因此，要想要解决报错，只需要进行进一步的限定即可：</p>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">WindowsMixedRealityXRSDKGGVHand detectedController = <span class="keyword">new</span> WindowsMixedRealityXRSDKGGVHand(TrackingState.NotTracked, Microsoft.MixedReality.Toolkit.Utilities.Handedness.None, inputSource);</span><br></pre></td></tr></table></figure>
+<div class="note warning flat"><p><code>Microsoft.MixedReality.Input.Handedness</code>是没有<code>None</code>属性的，因此build时会同样报错，这里很坑！</p>
+</div>
+]]></content>
+      <categories>
+        <category>hololens2 开发</category>
+      </categories>
+      <tags>
+        <tag>unity</tag>
+        <tag>hololens2</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>现在用不到但未来可能用得到的网页小配置</title>
     <url>/2023/10/27/%E7%8E%B0%E5%9C%A8%E7%94%A8%E4%B8%8D%E5%88%B0%E4%BD%86%E6%9C%AA%E6%9D%A5%E5%8F%AF%E8%83%BD%E7%94%A8%E5%BE%97%E5%88%B0%E7%9A%84%E7%BD%91%E9%A1%B5%E5%B0%8F%E9%85%8D%E7%BD%AE/</url>
     <content><![CDATA[<h1 id="note">Note</h1>
@@ -321,73 +432,6 @@ style<br>（simple/modern/flat/disabled）</td>
       </categories>
       <tags>
         <tag>网页配置</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Unity play模式下正常,打包时报错:Cannot build player while editor is importing assets or compiling scripts</title>
-    <url>/2023/10/28/Unity-play%E6%A8%A1%E5%BC%8F%E4%B8%8B%E6%AD%A3%E5%B8%B8-%E6%89%93%E5%8C%85%E6%97%B6%E6%8A%A5%E9%94%99-Cannot-build-player-while-editor-is-importing-assets-or-compiling-scripts/</url>
-    <content><![CDATA[<h1 id="问题描述">问题描述</h1>
-<p>今天build过程中，在build过程中出现：</p>
-<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">Cannot build player while editor is importing assets or compling scripts.</span><br></pre></td></tr></table></figure>
-<p>并且在build完成后，控制台报错如下：</p>
-<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">Library\PackageCache\com.microsoft.mixedreality.toolkit.foundation@f2323a9b7aec\Providers\WindowsMixedReality\XRSDK\WindowsMixedRealityDeviceManager.cs(404,128): error CS0104: 'Handedness' is an ambiguous reference between 'Microsoft.MixedReality.Input.Handedness' and 'Microsoft.MixedReality.Toolkit.Utilities.Handedness'</span><br></pre></td></tr></table></figure>
-<h1 id="问题分析">问题分析</h1>
-<p>可以看到在build过程中出现<span style="color:#F08080">Cannot build
-player while editor is importing assets or compling scripts.</span>
-可得，由两种情况：一是：<span style="color:#F08080">editor is importing
-assets </span>;另一种是<span style="color:#F08080">compling scripts
-出现错误 </span></p>
-<h2 id="editor-is-importing-assets">editor is importing assets</h2>
-<div class="note info flat"><p>这种一般都比较好解决，出现原因是:
-引用UnityEditor的文件必须放到Editor文件夹中（好像只要有就行）</p>
-</div>
-<p>解决办法：</p>
-<p>创建一个Editor文件夹，把用到UnityEditor及其API的脚本放到Editor文件夹下面</p>
-<h2 id="compling-scripts-出现错误">compling scripts 出现错误</h2>
-<p>我这里的原因是：</p>
-<p><code>Handedness</code>是一个模糊的引用，存在两个可能的选择：<code>Microsoft.MixedReality.Input.Handedness</code>
-和 <code>Microsoft.MixedReality.Toolkit.Utilities.Handedness</code></p>
-<p>出错的一行如下：</p>
-<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">WindowsMixedRealityXRSDKGGVHand detectedController = <span class="keyword">new</span> WindowsMixedRealityXRSDKGGVHand(TrackingState.NotTracked, Handedness.None, inputSource);</span><br></pre></td></tr></table></figure>
-<p>但其实查阅官网发现：</p>
-<p><code>WindowsMixedRealityXRSDKGGVHand</code>有四个参数：</p>
-<table>
-<thead>
-<tr class="header">
-<th>Parameters</th>
-<th></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><code>trackingState</code></td>
-<td>TrackingState</td>
-</tr>
-<tr class="even">
-<td><code>controllerHandedness</code></td>
-<td>Handedness</td>
-</tr>
-<tr class="odd">
-<td><code>inputSource</code></td>
-<td>IMixedRealityInputSource</td>
-</tr>
-<tr class="even">
-<td><code>interactions</code></td>
-<td>MixedRealityInteractionMapping[]</td>
-</tr>
-</tbody>
-</table>
-<p>然后点到<code>Handedness</code>其实发现它的命名空间为：<code>Microsoft.MixedReality.Toolkit.Utilities</code>，因此，要想要解决报错，只需要进行进一步的限定即可：</p>
-<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">WindowsMixedRealityXRSDKGGVHand detectedController = <span class="keyword">new</span> WindowsMixedRealityXRSDKGGVHand(TrackingState.NotTracked, Microsoft.MixedReality.Toolkit.Utilities.Handedness.None, inputSource);</span><br></pre></td></tr></table></figure>
-<div class="note warning flat"><p><code>Microsoft.MixedReality.Input.Handedness</code>是没有<code>None</code>属性的，因此build时会同样报错，这里很坑！</p>
-</div>
-]]></content>
-      <categories>
-        <category>hololens2 开发</category>
-      </categories>
-      <tags>
-        <tag>unity</tag>
-        <tag>hololens2</tag>
       </tags>
   </entry>
   <entry>
