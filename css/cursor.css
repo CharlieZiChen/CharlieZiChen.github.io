@@ -6,6 +6,7 @@
   height: 32px;
   /* 这里改变跟随的底色 */
   background: rgb(143, 90, 207);
+  /* 若要跟随的为一个圆，将border-radius的值设置为width和height的一半 */
   border-radius: 16px;
   opacity: 0.25;
   z-index: 10086;
