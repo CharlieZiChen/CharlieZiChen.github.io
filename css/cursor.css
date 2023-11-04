@@ -1,11 +1,12 @@
 /* 鼠标样式 */
 #cursor {
   position: fixed;
-  width: 16px;
-  height: 16px;
+  /* 这里改变跟随的大小 */
+  width: 32px;
+  height: 32px;
   /* 这里改变跟随的底色 */
   background: rgb(143, 90, 207);
-  border-radius: 8px;
+  border-radius: 16px;
   opacity: 0.25;
   z-index: 10086;
   pointer-events: none;
