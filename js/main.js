@@ -404,7 +404,7 @@ document.addEventListener('DOMContentLoaded', function () {
       } else {
         flag = ''
         if (currentTop === 0) {
-          $header.classList.remove('nav-fixed', 'nav-visible')
+          $header.classList.remove('nav-visible')
         }
         $rightside.classList.remove('rightside-show')
       }
