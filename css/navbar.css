@@ -1,14 +1,11 @@
 #nav-right{
     flex:1 1 auto;
-    justify-content: flex-end;
+    justify-content: center;
     margin-left: auto;
     display: flex;
     flex-wrap:nowrap;
 }
 
-#nav *::after{
-    background-color: transparent!important;
-}
 
 /*子菜单横向布局*/
 .menus_item_child li:not(#sidebar-menus li){
