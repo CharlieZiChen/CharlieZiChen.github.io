@@ -1,0 +1,53 @@
+/* 消息弹窗 */
+.snackbar-container {
+    background: #8c88f0dc !important;
+    color: #80e5f0 !important;
+    border-radius: 0 !important;
+    display: flex;
+    justify-content: center !important;
+    max-width: none !important;
+    min-width: 100% !important;
+    margin: 0px !important;
+    left: 0px !important;
+    height: 60px !important;
+    transform: none !important;
+    }
+    .snackbar-container p {
+    font-weight: bold !important;
+    text-align: center !important;
+    font-size: 0.8rem !important;
+    display: flex !important;
+    justify-content: center !important;
+    }
+    .snackbar-container .action {
+    color: #80e5f0 !important;
+    padding: 4px 6px !important;
+    font-weight: bold;
+    border-radius: 8px !important;
+    transition: 0.3s;
+    border: #8c88f0dc !important;
+    }
+    .snackbar-container .action:hover {
+    color: #8c88f0dc !important;
+    background: #80e5f0 !important;
+    }
+    .snackbar-container::after {
+    position: absolute;
+    width: 0;
+    height: 100%;
+    left: 0;
+    top: 50px;
+    background: #8c88f0dc;
+    opacity: 0.1;
+    content: "";
+    animation: snackbar-progress 2s linear forwards;
+    pointer-events: none;
+    }
+    @keyframes snackbar-progress {
+        from {
+            width: 0;
+        }
+        to {
+            width: 100%;
+        }
+    }
