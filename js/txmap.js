@@ -255,3 +255,5 @@ function showWelcome() {
     }
 }
 
+welcometxmap()
+
