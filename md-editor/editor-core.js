@@ -201,15 +201,61 @@
 
   const BUTTERFLY_COMPONENTS = Object.freeze([
     { id: 'note', label: '提示块', description: '强调提示、警告或补充信息', snippet: '{% note info modern %}\n{{selection}}\n{% endnote %}', placeholder: '在这里填写提示内容', select: '在这里填写提示内容' },
+    { id: 'subnote', label: '子提示块', description: '在组件内补充一层提示', snippet: '{% subnote info flat %}\n{{selection}}\n{% endsubnote %}', placeholder: '子提示内容', select: '子提示内容' },
     { id: 'label', label: '彩色标签', description: '插入行内彩色标签', snippet: '{% label {{selection}} blue %}', placeholder: '标签文字', select: '标签文字', inline: true },
-    { id: 'button', label: '链接按钮', description: '插入 Butterfly 按钮', snippet: '{% btn https://example.com,{{selection}},fas fa-link,blue %}', placeholder: '按钮文字', select: '按钮文字', inline: true },
-    { id: 'tabs', label: '标签页', description: '插入可切换的内容面板', snippet: '{% tabs 示例标签页,1 %}\n<!-- tab 标签一 -->\n{{selection}}\n<!-- endtab -->\n<!-- tab 标签二 -->\n标签二内容\n<!-- endtab -->\n{% endtabs %}', placeholder: '标签一内容', select: '标签一内容' },
-    { id: 'timeline', label: '时间线', description: '按阶段组织内容', snippet: '{% timeline 时间线,blue %}\n<!-- timeline 阶段一 -->\n{{selection}}\n<!-- endtimeline -->\n{% endtimeline %}', placeholder: '阶段内容', select: '阶段内容' },
+    { id: 'btn', label: '链接按钮', description: '插入 Butterfly 按钮', snippet: '{% btn https://example.com,{{selection}},fas fa-link,blue %}', placeholder: '按钮文字', select: '按钮文字', inline: true },
+    { id: 'hideInline', label: '隐藏文字', description: '点击后显示行内内容', snippet: '{% hideInline {{selection}},点击查看,#49b1f5,#ffffff %}', placeholder: '隐藏文字', select: '隐藏文字', inline: true },
+    { id: 'hideBlock', label: '隐藏区块', description: '点击后显示块级内容', snippet: '{% hideBlock 点击查看,#49b1f5,#ffffff %}\n{{selection}}\n{% endhideBlock %}', placeholder: '隐藏内容', select: '隐藏内容' },
     { id: 'hideToggle', label: '折叠内容', description: '点击后展开隐藏内容', snippet: '{% hideToggle 点击展开 %}\n{{selection}}\n{% endhideToggle %}', placeholder: '隐藏内容', select: '隐藏内容' },
+    { id: 'tabs', label: '标签页', description: '插入可切换的内容面板', snippet: '{% tabs 示例标签页,1 %}\n<!-- tab 标签一 -->\n{{selection}}\n<!-- endtab -->\n<!-- tab 标签二 -->\n标签二内容\n<!-- endtab -->\n{% endtabs %}', placeholder: '标签一内容', select: '标签一内容' },
+    { id: 'subtabs', label: '二级标签页', description: '在标签页中插入子标签', snippet: '{% subtabs 子标签页,1 %}\n<!-- tab 标签一 -->\n{{selection}}\n<!-- endtab -->\n{% endsubtabs %}', placeholder: '子标签内容', select: '子标签内容' },
+    { id: 'subsubtabs', label: '三级标签页', description: '在子标签中继续分组', snippet: '{% subsubtabs 三级标签页,1 %}\n<!-- tab 标签一 -->\n{{selection}}\n<!-- endtab -->\n{% endsubsubtabs %}', placeholder: '三级标签内容', select: '三级标签内容' },
+    { id: 'timeline', label: '时间线', description: '按阶段组织内容', snippet: '{% timeline 时间线,blue %}\n<!-- timeline 阶段一 -->\n{{selection}}\n<!-- endtimeline -->\n{% endtimeline %}', placeholder: '阶段内容', select: '阶段内容' },
     { id: 'gallery', label: '图片画廊', description: '将多张图片排成画廊', snippet: '{% gallery %}\n![图片说明](/img/example.webp)\n{% endgallery %}', select: '/img/example.webp' },
+    { id: 'galleryGroup', label: '画廊分组', description: '为图片集创建封面入口', snippet: '{% galleryGroup 相册 相册说明 /photos/ /img/example.webp %}', inline: true },
     { id: 'inlineImg', label: '行内图片', description: '在文字中插入小图', snippet: '{% inlineImg /img/example.webp 24px %}', select: '/img/example.webp', inline: true },
-    { id: 'pdf', label: 'PDF', description: '嵌入站内或外部 PDF', snippet: '{% pdf /pdf/example.pdf %}', select: '/pdf/example.pdf' }
+    { id: 'pdf', label: 'PDF', description: '嵌入站内或外部 PDF', snippet: '{% pdf /pdf/example.pdf %}', select: '/pdf/example.pdf' },
+    { id: 'flink', label: '友链卡片', description: '用结构化表单维护友情链接', snippet: '{% flink %}\n- class_name: 友情链接\n  class_desc: 值得访问的站点\n  link_list:\n    - name: 示例\n      link: https://example.com\n      avatar: /img/avatar.webp\n      descr: 站点说明\n      theme_color: "#49b1f5"\n{% endflink %}' },
+    { id: 'mermaid', label: 'Mermaid 图表', description: '插入流程图、时序图等', snippet: '{% mermaid %}\ngraph TD\n  A[开始] --> B[结束]\n{% endmermaid %}' },
+    { id: 'score', label: 'ABC 乐谱', description: '插入 ABC 记谱法内容', snippet: '{% score %}\nX:1\nT:示例\nM:4/4\nK:C\nC D E F|G A B c|\n{% endscore %}' }
   ])
+
+  const ASSET_REFERENCE_PATTERN = /mdw-asset:\/\/([a-z0-9-]+)/gi
+
+  const findAssetIds = source => {
+    const ids = []
+    const seen = new Set()
+    for (const match of normalizeContent(source).matchAll(ASSET_REFERENCE_PATTERN)) {
+      const id = match[1].toLowerCase()
+      if (!seen.has(id)) ids.push(id)
+      seen.add(id)
+    }
+    return ids
+  }
+
+  const replaceAssetReferences = (source, replacements = {}) => normalizeContent(source)
+    .replace(ASSET_REFERENCE_PATTERN, (raw, id) => replacements[id.toLowerCase()] || raw)
+
+  const sanitizeAssetFileName = value => {
+    const source = String(value || 'file').normalize('NFKC')
+    const dot = source.lastIndexOf('.')
+    const extension = dot > 0 ? source.slice(dot).toLowerCase().replace(/[^.a-z0-9]/g, '') : ''
+    const stem = (dot > 0 ? source.slice(0, dot) : source)
+      .replace(/[^\p{Letter}\p{Number}._-]+/gu, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 72) || 'file'
+    return `${stem}${extension}`
+  }
+
+  const buildAssetPaths = (assetBasePath, documentSlug, remoteName) => {
+    const base = String(assetBasePath || 'source/uploads').replace(/^\/+|\/+$/g, '')
+    const slug = slugify(documentSlug)
+    const name = sanitizeAssetFileName(remoteName)
+    return {
+      publicPath: `/uploads/${slug}/${name}`,
+      remotePath: `${base}/${slug}/${name}`
+    }
+  }
 
   // A small deterministic content fingerprint keeps the browser data model
   // synchronous and avoids persisting a full second copy of every document.
@@ -389,12 +435,14 @@
   return {
     ACTIVE_PUBLISH_STATUSES,
     applyTextEdit,
+    buildAssetPaths,
     BUTTERFLY_COMPONENTS,
     contentHash,
     createPublishJob,
     decodeBase64,
     deriveTitle,
     encodeBase64,
+    findAssetIds,
     isPublishLocked,
     mergeRemoteDocuments,
     migrateDocument,
@@ -403,6 +451,8 @@
     prepareManagedDocument,
     readFrontMatterValue,
     readManagedVersion,
+    replaceAssetReferences,
+    sanitizeAssetFileName,
     slugify,
     splitFrontMatter,
     splitMarkdownBlocks,

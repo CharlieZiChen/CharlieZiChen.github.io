@@ -172,6 +172,11 @@
   box-shadow: none;
 }
 
+/* Plain-text prompt blocks do not need a misleading language badge. */
+#article-container:has(.managed-page-version) figure.highlight:is(.text, .plain, .plaintext) .code-lang {
+  display: none;
+}
+
 .managed-page-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));

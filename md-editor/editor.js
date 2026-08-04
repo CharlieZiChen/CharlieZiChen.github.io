@@ -6,19 +6,22 @@
 
   const core = globalThis.MarkdownEditorCore
   const adapter = globalThis.ButterflyEditorAdapter
+  const mediaStore = globalThis.MarkdownMediaStore
   const ToastEditor = globalThis.toastui?.Editor
-  if (!core || !adapter || !ToastEditor) {
+  if (!core || !adapter || !mediaStore || !ToastEditor) {
     console.error('Markdown 工作台依赖未加载。')
     return
   }
 
   const {
     BUTTERFLY_COMPONENTS,
+    buildAssetPaths,
     contentHash,
     createPublishJob,
     decodeBase64,
     deriveTitle,
     encodeBase64,
+    findAssetIds,
     isPublishLocked,
     mergeRemoteDocuments,
     migrateDocument,
@@ -26,6 +29,7 @@
     prepareManagedDocument,
     readFrontMatterValue,
     readManagedVersion,
+    replaceAssetReferences,
     slugify,
     splitFrontMatter,
     stripManagedDocumentChrome
@@ -42,14 +46,17 @@
   const BASE_DOCUMENT_TITLE = document.title
   const elements = {
     actionsLink: document.getElementById('mdw-actions-link'),
+    assetEmpty: document.getElementById('mdw-asset-empty'),
+    assetInput: document.getElementById('mdw-asset-input'),
+    assetList: document.getElementById('mdw-asset-list'),
     branch: document.getElementById('mdw-branch'),
-    componentArgs: document.getElementById('mdw-component-args'),
-    componentBody: document.getElementById('mdw-component-body'),
-    componentBodyField: document.getElementById('mdw-component-body-field'),
     componentDelete: document.getElementById('mdw-component-delete'),
     componentDialog: document.getElementById('mdw-component-dialog'),
     componentDialogTitle: document.getElementById('mdw-component-dialog-title'),
+    componentError: document.getElementById('mdw-component-error'),
+    componentFields: document.getElementById('mdw-component-fields'),
     componentSave: document.getElementById('mdw-component-save'),
+    componentSource: document.getElementById('mdw-component-source'),
     componentTools: document.getElementById('mdw-component-tools'),
     conflict: document.getElementById('mdw-conflict'),
     conflictDownload: document.getElementById('mdw-conflict-download'),
@@ -94,6 +101,7 @@
     branch: root.dataset.defaultBranch || 'main',
     basePath: root.dataset.basePath || 'source/pages'
   }
+  const ASSET_BASE_PATH = root.dataset.assetBasePath || 'source/uploads'
   const state = {
     activeId: null,
     connected: false,
@@ -105,11 +113,18 @@
   let editor = null
   let componentEntries = []
   let activeComponentId = ''
+  let activeComponentValues = null
+  let pendingSourceComponentId = ''
   let githubToken = ''
   let saveTimer = 0
   let statusTimer = 0
   let deploymentRun = 0
+  let publishPreparing = false
   let suppressEditorChange = false
+  let editorLoadSequence = 0
+  let pendingAssetFieldPath = null
+  const assetObjectUrls = new Map()
+  const previewUrlToReference = new Map()
   const channel = 'BroadcastChannel' in globalThis ? new BroadcastChannel(CHANNEL_KEY) : null
 
   const createId = fileName => {
@@ -258,6 +273,118 @@
     saveTimer = setTimeout(() => saveActiveDocument({ silent: true }), 700)
   }
 
+  const getValueAtPath = (target, path) => path.reduce((value, key) => value?.[key], target)
+  const setValueAtPath = (target, path, value) => {
+    let current = target
+    path.slice(0, -1).forEach(key => { current = current[key] })
+    current[path[path.length - 1]] = value
+  }
+
+  const assetReference = id => `mdw-asset://${id}`
+
+  const objectUrlForAsset = record => {
+    if (assetObjectUrls.has(record.id)) return assetObjectUrls.get(record.id)
+    const url = URL.createObjectURL(record.blob)
+    assetObjectUrls.set(record.id, url)
+    previewUrlToReference.set(url, assetReference(record.id))
+    return url
+  }
+
+  const dehydrateAssetReferences = source => {
+    let result = normalizeContent(source)
+    previewUrlToReference.forEach((reference, url) => { result = result.split(url).join(reference) })
+    return result
+  }
+
+  const hydrateAssetReferences = async source => {
+    const content = normalizeContent(source)
+    const replacements = {}
+    await Promise.all(findAssetIds(content).map(async id => {
+      const record = await mediaStore.get(id)
+      if (record?.blob) replacements[id] = objectUrlForAsset(record)
+    }))
+    return replaceAssetReferences(content, replacements)
+  }
+
+  const stageAsset = async file => {
+    const activeDocument = getActiveDocument()
+    if (!activeDocument) throw new Error('请先选择一份文稿。')
+    const record = await mediaStore.add(file, activeDocument.id)
+    objectUrlForAsset(record)
+    await renderMediaLibrary()
+    return record
+  }
+
+  const insertAssetRecord = record => {
+    if (!editor || !record) return
+    const url = objectUrlForAsset(record)
+    const label = String(record.originalName || record.name).replace(/[\]\\]/g, '')
+    const markdown = record.isImage ? `![${label}](${url})` : `[下载 ${label}](${url})`
+    editor.insertText(`${state.mode === 'markdown' ? '' : '\n'}${markdown}${state.mode === 'markdown' ? '' : '\n'}`)
+    editor.focus()
+    markUnsaved()
+  }
+
+  const removeAssetRecord = async record => {
+    const activeDocument = saveActiveDocument({ silent: true, noRender: true })
+    if (activeDocument?.content.includes(assetReference(record.id)) && !window.confirm('该资源仍被当前草稿引用。移除后发布会被阻止，确定继续吗？')) return
+    await mediaStore.remove(record.id)
+    const url = assetObjectUrls.get(record.id)
+    if (url) {
+      URL.revokeObjectURL(url)
+      assetObjectUrls.delete(record.id)
+      previewUrlToReference.delete(url)
+    }
+    await renderMediaLibrary()
+    announce('已移除本地待发布资源。')
+  }
+
+  const renderMediaLibrary = async () => {
+    const activeDocument = getActiveDocument()
+    const requestedId = activeDocument?.id || ''
+    const records = requestedId ? await mediaStore.list(requestedId) : []
+    if (getActiveDocument()?.id !== requestedId) return
+    elements.assetList.replaceChildren()
+    elements.assetEmpty.hidden = records.length > 0
+    records.forEach(record => {
+      const item = document.createElement('div')
+      item.className = 'mdw-asset-item'
+      let visual
+      if (record.isImage) {
+        visual = document.createElement('img')
+        visual.className = 'mdw-asset-preview'
+        visual.src = objectUrlForAsset(record)
+        visual.alt = ''
+      } else {
+        visual = document.createElement('span')
+        visual.className = 'mdw-asset-icon'
+        visual.innerHTML = '<i class="fas fa-file" aria-hidden="true"></i>'
+      }
+      const copy = document.createElement('div')
+      copy.className = 'mdw-asset-copy'
+      const title = document.createElement('strong')
+      title.textContent = record.originalName || record.name
+      const meta = document.createElement('span')
+      meta.textContent = `${mediaStore.formatBytes(record.size)} · 待随下次发布提交`
+      copy.append(title, meta)
+      const actions = document.createElement('div')
+      actions.className = 'mdw-asset-actions'
+      const insert = document.createElement('button')
+      insert.type = 'button'
+      insert.className = 'mdw-button mdw-button-secondary'
+      insert.textContent = '插入'
+      insert.addEventListener('click', () => insertAssetRecord(record))
+      const remove = document.createElement('button')
+      remove.type = 'button'
+      remove.className = 'mdw-button mdw-button-danger'
+      remove.textContent = '移除'
+      remove.addEventListener('click', () => removeAssetRecord(record).catch(error => announce(error.message, 'error')))
+      actions.append(insert, remove)
+      item.append(visual, copy, actions)
+      elements.assetList.append(item)
+    })
+  }
+
   const initializeEditor = () => {
     editor = new ToastEditor({
       el: elements.richEditor,
@@ -276,6 +403,17 @@
       usageStatistics: false,
       useCommandShortcut: true,
       widgetRules: [{ rule: new RegExp(adapter.PLACEHOLDER_PATTERN_SOURCE), toDOM: createWidget }],
+      hooks: {
+        addImageBlobHook: async (blob, callback) => {
+          try {
+            const record = await stageAsset(blob)
+            callback(objectUrlForAsset(record), record.originalName || record.name)
+            announce('图片已暂存，将随文稿一起发布。')
+          } catch (error) {
+            announce(`图片添加失败：${error.message}`, 'error')
+          }
+        }
+      },
       events: { change: markUnsaved }
     })
   }
@@ -283,7 +421,7 @@
   const readEditorBody = () => {
     if (!editor) return ''
     const markdown = normalizeContent(editor.getMarkdown())
-    return state.mode === 'wysiwyg' ? adapter.restoreMarkdown(markdown, componentEntries) : markdown
+    return dehydrateAssetReferences(state.mode === 'wysiwyg' ? adapter.restoreMarkdown(markdown, componentEntries) : markdown)
   }
 
   const composeDocument = () => {
@@ -316,36 +454,41 @@
     }
   }
 
-  const loadActiveDocumentIntoEditor = () => {
-    const document = getActiveDocument()
-    if (!document || !editor) return
-    const parsed = splitFrontMatter(stripManagedDocumentChrome(document.content))
+  const loadActiveDocumentIntoEditor = async () => {
+    const activeDocument = getActiveDocument()
+    if (!activeDocument || !editor) return
+    const sequence = ++editorLoadSequence
+    const parsed = splitFrontMatter(stripManagedDocumentChrome(activeDocument.content))
+    const hydratedBody = await hydrateAssetReferences(parsed.body)
+    if (sequence !== editorLoadSequence || getActiveDocument()?.id !== activeDocument.id) return
     elements.frontMatter.value = parsed.frontMatter
     suppressEditorChange = true
     if (state.mode === 'wysiwyg') {
-      const protectedBody = adapter.protectMarkdown(parsed.body)
+      const protectedBody = adapter.protectMarkdown(hydratedBody)
       componentEntries = protectedBody.entries
       editor.setMarkdown(protectedBody.markdown, false)
       editor.changeMode('wysiwyg', true)
     } else {
       componentEntries = []
-      editor.setMarkdown(parsed.body, false)
+      editor.setMarkdown(hydratedBody, false)
       editor.changeMode('markdown', true)
     }
     requestAnimationFrame(() => { suppressEditorChange = false })
     elements.saveState.textContent = '已保存'
+    renderMediaLibrary().catch(error => console.warn('读取待发布资源失败。', error))
   }
 
-  const switchMode = mode => {
+  const switchMode = async mode => {
     if (!editor || mode === state.mode) return
     suppressEditorChange = true
     if (mode === 'markdown') {
-      const raw = adapter.restoreMarkdown(editor.getMarkdown(), componentEntries)
+      const raw = dehydrateAssetReferences(adapter.restoreMarkdown(editor.getMarkdown(), componentEntries))
       componentEntries = []
       editor.setMarkdown(raw, false)
       editor.changeMode('markdown')
     } else {
-      const protectedBody = adapter.protectMarkdown(editor.getMarkdown())
+      const hydrated = await hydrateAssetReferences(dehydrateAssetReferences(editor.getMarkdown()))
+      const protectedBody = adapter.protectMarkdown(hydrated)
       componentEntries = protectedBody.entries
       editor.setMarkdown(protectedBody.markdown, false)
       editor.changeMode('wysiwyg')
@@ -355,15 +498,16 @@
     requestAnimationFrame(() => { suppressEditorChange = false })
   }
 
-  const reloadEditorBody = body => {
+  const reloadEditorBody = async body => {
     suppressEditorChange = true
+    const hydratedBody = await hydrateAssetReferences(body)
     if (state.mode === 'wysiwyg') {
-      const protectedBody = adapter.protectMarkdown(body)
+      const protectedBody = adapter.protectMarkdown(hydratedBody)
       componentEntries = protectedBody.entries
       editor.setMarkdown(protectedBody.markdown, false)
     } else {
       componentEntries = []
-      editor.setMarkdown(body, false)
+      editor.setMarkdown(hydratedBody, false)
     }
     requestAnimationFrame(() => { suppressEditorChange = false })
   }
@@ -385,32 +529,220 @@
     const component = BUTTERFLY_COMPONENTS.find(item => item.id === componentId)
     if (!component || !editor) return
     if (state.mode === 'markdown') {
-      const selection = component.select || component.placeholder || ''
-      editor.insertText(String(component.snippet).replace('{{selection}}', selection))
+      const entry = adapter.entryFromComponent(component)
+      if (!entry) return
+      componentEntries.push(entry)
+      pendingSourceComponentId = entry.id
+      openComponentDialog(entry.id)
     } else {
       const entry = adapter.entryFromComponent(component)
       if (!entry) return
       componentEntries.push(entry)
       editor.insertText(`${component.inline ? '' : '\n'}${entry.placeholder}${component.inline ? '' : '\n'}`)
+      requestAnimationFrame(() => openComponentDialog(entry.id))
     }
     editor.focus()
     markUnsaved()
   }
 
+  const defaultValueForField = field => {
+    if (field.type === 'checkbox') return false
+    if (field.type === 'number') return Number(field.min || 0)
+    if (field.type === 'color') return '#49b1f5'
+    if (field.type === 'repeater') return []
+    return ''
+  }
+
+  const createRepeaterItem = fields => Object.fromEntries(fields.map(field => [field.key, defaultValueForField(field)]))
+
+  const mermaidTemplates = {
+    flowchart: 'graph TD\n  A[开始] --> B[结束]',
+    sequence: 'sequenceDiagram\n  participant A as 用户\n  participant B as 系统\n  A->>B: 请求\n  B-->>A: 响应',
+    gantt: 'gantt\n  title 项目计划\n  dateFormat YYYY-MM-DD\n  section 阶段\n  任务 :2026-08-01, 7d'
+  }
+
+  const updateComponentSourcePreview = () => {
+    const entry = componentEntries.find(item => item.id === activeComponentId)
+    if (!entry || !activeComponentValues) return
+    const preview = { ...entry, values: JSON.parse(JSON.stringify(activeComponentValues)) }
+    adapter.applyValues(preview, preview.values)
+    elements.componentSource.textContent = adapter.serializeEntry(preview)
+  }
+
+  const renderField = (field, values, path, container) => {
+    if (activeComponentId) {
+      const activeEntry = componentEntries.find(item => item.id === activeComponentId)
+      if (activeEntry?.name === 'gallery' && field.key === 'dataUrl' && values.mode !== 'url') return
+      if (activeEntry?.name === 'gallery' && field.key === 'items' && values.mode === 'url') return
+    }
+
+    if (field.type === 'repeater') {
+      const section = document.createElement('section')
+      section.className = 'mdw-repeater'
+      const heading = document.createElement('div')
+      heading.className = 'mdw-repeater-heading'
+      const title = document.createElement('strong')
+      title.textContent = field.label
+      const add = document.createElement('button')
+      add.type = 'button'
+      add.className = 'mdw-repeater-add'
+      add.textContent = `+ ${field.addLabel || '添加一项'}`
+      add.addEventListener('click', () => {
+        const items = getValueAtPath(activeComponentValues, path) || []
+        items.push(createRepeaterItem(field.fields))
+        setValueAtPath(activeComponentValues, path, items)
+        renderComponentFields()
+      })
+      heading.append(title, add)
+      const itemsContainer = document.createElement('div')
+      itemsContainer.className = 'mdw-repeater-items'
+      const items = Array.isArray(getValueAtPath(activeComponentValues, path)) ? getValueAtPath(activeComponentValues, path) : []
+      items.forEach((item, index) => {
+        const card = document.createElement('div')
+        card.className = 'mdw-repeater-item'
+        const cardHeader = document.createElement('div')
+        cardHeader.className = 'mdw-repeater-item-header'
+        const count = document.createElement('span')
+        count.textContent = `${field.label} ${index + 1}`
+        const controls = document.createElement('div')
+        controls.className = 'mdw-repeater-controls'
+        ;[['↑', -1, '上移'], ['↓', 1, '下移']].forEach(([symbol, offset, label]) => {
+          const button = document.createElement('button')
+          button.type = 'button'
+          button.textContent = symbol
+          button.title = label
+          button.disabled = index + offset < 0 || index + offset >= items.length
+          button.addEventListener('click', () => {
+            const target = index + offset
+            ;[items[index], items[target]] = [items[target], items[index]]
+            renderComponentFields()
+          })
+          controls.append(button)
+        })
+        const remove = document.createElement('button')
+        remove.type = 'button'
+        remove.textContent = '×'
+        remove.title = '删除'
+        remove.disabled = items.length <= Number(field.minItems || 0)
+        remove.addEventListener('click', () => { items.splice(index, 1); renderComponentFields() })
+        controls.append(remove)
+        cardHeader.append(count, controls)
+        const fields = document.createElement('div')
+        fields.className = 'mdw-repeater-item-fields'
+        field.fields.forEach(child => renderField(child, item, [...path, index, child.key], fields))
+        card.append(cardHeader, fields)
+        itemsContainer.append(card)
+      })
+      section.append(heading, itemsContainer)
+      container.append(section)
+      return
+    }
+
+    const wrapper = document.createElement('div')
+    wrapper.className = `mdw-field${['textarea', 'asset'].includes(field.type) ? ' mdw-field-wide' : ''}${field.code ? ' mdw-field-code' : ''}`
+    const value = getValueAtPath(activeComponentValues, path)
+    if (field.type === 'checkbox') {
+      const label = document.createElement('label')
+      label.className = 'mdw-checkbox-field'
+      const input = document.createElement('input')
+      input.type = 'checkbox'
+      input.checked = Boolean(value)
+      input.addEventListener('change', () => { setValueAtPath(activeComponentValues, path, input.checked); updateComponentSourcePreview() })
+      label.append(input, document.createTextNode(field.label))
+      wrapper.append(label)
+      container.append(wrapper)
+      return
+    }
+
+    const label = document.createElement('label')
+    label.className = 'mdw-field-label'
+    label.textContent = `${field.label}${field.required ? ' *' : ''}`
+    let input
+    if (field.type === 'textarea') input = document.createElement('textarea')
+    else if (field.type === 'select') {
+      input = document.createElement('select')
+      field.options.forEach(option => {
+        const element = document.createElement('option')
+        element.value = option.value
+        element.textContent = option.label
+        input.append(element)
+      })
+    } else {
+      input = document.createElement('input')
+      input.type = field.type === 'number' ? 'number' : (field.type === 'color' ? 'color' : 'text')
+    }
+    input.value = value ?? ''
+    if (field.placeholder) input.placeholder = field.placeholder
+    if (field.min !== undefined) input.min = field.min
+    if (field.step !== undefined) input.step = field.step
+    const updateValue = () => {
+      const next = field.type === 'number' ? Number(input.value) : input.value
+      setValueAtPath(activeComponentValues, path, next)
+      if (field.key === 'template' && mermaidTemplates[next]) activeComponentValues.source = mermaidTemplates[next]
+      if (field.key === 'mode' || field.key === 'template') renderComponentFields()
+      else updateComponentSourcePreview()
+    }
+    input.addEventListener(field.type === 'select' ? 'change' : 'input', updateValue)
+    if (field.type === 'asset') {
+      const controls = document.createElement('div')
+      controls.className = 'mdw-asset-field-control'
+      const choose = document.createElement('button')
+      choose.type = 'button'
+      choose.className = 'mdw-button mdw-button-secondary'
+      choose.textContent = '选择文件'
+      choose.addEventListener('click', () => {
+        pendingAssetFieldPath = path
+        elements.assetInput.click()
+      })
+      controls.append(input, choose)
+      label.append(controls)
+    } else label.append(input)
+    wrapper.append(label)
+    container.append(wrapper)
+  }
+
+  const renderComponentFields = () => {
+    const entry = componentEntries.find(item => item.id === activeComponentId)
+    const schema = entry && adapter.getSchema(entry.name)
+    if (!entry || !schema || !activeComponentValues) return
+    elements.componentFields.replaceChildren()
+    schema.fields.forEach(field => renderField(field, activeComponentValues, [field.key], elements.componentFields))
+    elements.componentError.hidden = true
+    updateComponentSourcePreview()
+  }
+
   const openComponentDialog = id => {
     const entry = componentEntries.find(item => item.id === id)
-    if (!entry) return
+    const schema = entry && adapter.getSchema(entry.name)
+    if (!entry || !schema) return
     activeComponentId = id
+    activeComponentValues = JSON.parse(JSON.stringify(entry.values || adapter.valuesFromEntry(entry)))
     elements.componentDialogTitle.textContent = entry.label
-    elements.componentArgs.value = entry.args
-    elements.componentBody.value = entry.body
-    elements.componentBodyField.hidden = !entry.paired
+    renderComponentFields()
     elements.componentDialog.showModal()
   }
 
   const updateActiveComponent = action => {
     const entry = componentEntries.find(item => item.id === activeComponentId)
     if (!entry) return
+    if (entry.id === pendingSourceComponentId) {
+      if (action === 'save') {
+        const errors = adapter.validateValues(entry.name, activeComponentValues)
+        if (errors.length) {
+          elements.componentError.textContent = errors.join('；')
+          elements.componentError.hidden = false
+          return
+        }
+        adapter.applyValues(entry, activeComponentValues)
+        editor.insertText(adapter.serializeEntry(entry))
+        editor.focus()
+        markUnsaved()
+      }
+      componentEntries = componentEntries.filter(item => item.id !== entry.id)
+      pendingSourceComponentId = ''
+      elements.componentDialog.close(action)
+      return
+    }
     if (action === 'delete') {
       const markdown = editor.getMarkdown().split(entry.placeholder).join('')
       componentEntries = componentEntries.filter(item => item.id !== entry.id)
@@ -421,8 +753,13 @@
         markUnsaved()
       })
     } else if (action === 'save') {
-      entry.args = elements.componentArgs.value.trim()
-      if (entry.paired) entry.body = normalizeContent(elements.componentBody.value).replace(/^\n|\n$/g, '')
+      const errors = adapter.validateValues(entry.name, activeComponentValues)
+      if (errors.length) {
+        elements.componentError.textContent = errors.join('；')
+        elements.componentError.hidden = false
+        return
+      }
+      adapter.applyValues(entry, activeComponentValues)
       elements.richEditor.querySelectorAll(`[data-component-id="${entry.id}"] .mdw-butterfly-widget-summary`).forEach(summary => {
         summary.textContent = adapter.summarizeEntry(entry)
       })
@@ -488,7 +825,7 @@
     elements.connectButton.hidden = state.connected
     elements.disconnectButton.hidden = !state.connected
     elements.syncButton.disabled = !state.connected
-    elements.publishButton.disabled = !state.connected || !document || locked || document.syncStatus === 'conflict'
+    elements.publishButton.disabled = publishPreparing || !state.connected || !document || locked || document.syncStatus === 'conflict'
     if (locked) elements.publishButton.title = '上一次发布尚未完成；你仍可继续编辑并保存草稿。'
     else if (document?.syncStatus === 'conflict') elements.publishButton.title = '请先处理本地与 GitHub 的版本冲突。'
     else elements.publishButton.removeAttribute('title')
@@ -672,6 +1009,64 @@
     setTimeout(poll, 2500)
   }
 
+  const resolvePublishAssets = async (snapshot, slug) => {
+    const ids = findAssetIds(snapshot)
+    const replacements = {}
+    const assets = []
+    let total = 0
+    for (const id of ids) {
+      const record = await mediaStore.get(id)
+      if (!record?.blob) throw new Error(`资源 ${id} 已不在当前浏览器中，请重新选择文件。`)
+      total += Number(record.size || 0)
+      if (total > mediaStore.BATCH_LIMIT) throw new Error('待发布资源合计超过 30 MiB。')
+      const paths = buildAssetPaths(ASSET_BASE_PATH, slug, record.remoteName)
+      replacements[id] = paths.publicPath
+      assets.push({ ...record, ...paths })
+    }
+    return { assets, content: replaceAssetReferences(snapshot, replacements), ids }
+  }
+
+  const createAtomicPublishCommit = async ({ assets, currentExists, prepared }) => {
+    const baseEndpoint = repositoryEndpoint(state.repository)
+    const branchPath = encodePath(state.repository.branch)
+    const reference = await githubRequest(`${baseEndpoint}/git/ref/heads/${branchPath}`)
+    const headSha = String(reference?.object?.sha || '')
+    if (!headSha) throw new Error('无法读取发布分支的当前提交。')
+    const headCommit = await githubRequest(`${baseEndpoint}/git/commits/${encodeURIComponent(headSha)}`)
+    const baseTree = String(headCommit?.tree?.sha || '')
+    if (!baseTree) throw new Error('无法读取发布分支的文件树。')
+
+    const markdownBlob = await githubRequest(`${baseEndpoint}/git/blobs`, {
+      method: 'POST',
+      body: { content: encodeBase64(prepared.content), encoding: 'base64' }
+    })
+    const treeEntries = [{ path: prepared.remotePath, mode: '100644', type: 'blob', sha: markdownBlob.sha }]
+    for (const record of assets) {
+      const blob = await githubRequest(`${baseEndpoint}/git/blobs`, {
+        method: 'POST',
+        body: { content: await mediaStore.blobToBase64(record.blob), encoding: 'base64' }
+      })
+      treeEntries.push({ path: record.remotePath, mode: '100644', type: 'blob', sha: blob.sha })
+    }
+    const tree = await githubRequest(`${baseEndpoint}/git/trees`, {
+      method: 'POST',
+      body: { base_tree: baseTree, tree: treeEntries }
+    })
+    const commit = await githubRequest(`${baseEndpoint}/git/commits`, {
+      method: 'POST',
+      body: {
+        message: `${currentExists ? 'docs: update' : 'docs: publish'} page ${prepared.slug}${assets.length ? ` with ${assets.length} asset${assets.length === 1 ? '' : 's'}` : ''}`,
+        tree: tree.sha,
+        parents: [headSha]
+      }
+    })
+    await githubRequest(`${baseEndpoint}/git/refs/heads/${branchPath}`, {
+      method: 'PATCH',
+      body: { sha: commit.sha, force: false }
+    })
+    return { commitSha: String(commit.sha || ''), documentSha: String(markdownBlob.sha || '') }
+  }
+
   const publishActiveDocument = async () => {
     if (!state.connected || !state.repository) {
       announce('请先连接具有 Contents 写入权限的 GitHub 仓库。', 'error')
@@ -681,19 +1076,35 @@
       announce('上一次发布尚未完成；当前修改会继续保存为草稿，部署完成后再发布。', 'error')
       return
     }
+    if (publishPreparing) return
+    publishPreparing = true
+    renderConnection()
     const document = saveActiveDocument({ silent: true })
-    if (!document) return
+    if (!document) { publishPreparing = false; renderConnection(); return }
     if (document.syncStatus === 'conflict') {
+      publishPreparing = false
+      renderConnection()
       announce('请先处理本地与 GitHub 的版本冲突。', 'error')
       return
     }
 
     const snapshot = document.content
-    const prepared = prepareManagedDocument(snapshot, {
-      basePath: state.repository.basePath,
-      fileName: document.fileName,
-      slug: document.slug || document.fileName.replace(/\.md$/i, '')
-    })
+    let assetResolution
+    let prepared
+    try {
+      const slug = slugify(document.slug || document.fileName.replace(/\.md$/i, ''))
+      assetResolution = await resolvePublishAssets(snapshot, slug)
+      prepared = prepareManagedDocument(assetResolution.content, {
+        basePath: state.repository.basePath,
+        fileName: document.fileName,
+        slug
+      })
+    } catch (error) {
+      publishPreparing = false
+      renderConnection()
+      announce(`发布前检查失败：${error.message}`, 'error')
+      return
+    }
     const snapshotHash = contentHash(snapshot)
     const publishedUrl = new URL(prepared.pagePath, root.dataset.siteUrl || window.location.origin).href
     const actionsUrl = `https://github.com/${encodeURIComponent(state.repository.owner)}/${encodeURIComponent(state.repository.repo)}/actions`
@@ -711,6 +1122,7 @@
       repository: { ...state.repository }
     }
     persistPublishJob()
+    publishPreparing = false
     render()
 
     try {
@@ -720,15 +1132,7 @@
       if (current && !document.remotePath) throw new Error(`共享页面“${prepared.slug}”已存在。请先重新同步再继续。`)
       if (current && document.sha && current.sha !== document.sha) throw new Error('GitHub 文稿在本次编辑期间发生了变化。请重新同步并处理版本冲突。')
 
-      const result = await githubRequest(contentEndpoint, {
-        method: 'PUT',
-        body: {
-          message: `${current ? 'docs: update' : 'docs: publish'} page ${prepared.slug}`,
-          content: encodeBase64(prepared.content),
-          branch: state.repository.branch,
-          ...(current?.sha ? { sha: current.sha } : {})
-        }
-      })
+      const result = await createAtomicPublishCommit({ assets: assetResolution.assets, currentExists: Boolean(current), prepared })
 
       const latestDocument = state.documents.find(item => item.id === document.id)
       const publishedEditableContent = stripManagedDocumentChrome(prepared.content)
@@ -743,7 +1147,7 @@
         latestDocument.fileName = `${prepared.slug}.md`
         latestDocument.slug = prepared.slug
         latestDocument.remotePath = prepared.remotePath
-        latestDocument.sha = String(result?.content?.sha || '')
+        latestDocument.sha = result.documentSha
         latestDocument.version = prepared.version
         latestDocument.publishedAt = Date.now()
         latestDocument.publishedUrl = publishedUrl
@@ -753,10 +1157,17 @@
         latestDocument.syncStatus = latestDocument.dirty ? 'local-ahead' : 'clean'
       }
       persistDocuments()
+      if (latestDocument && !findAssetIds(latestDocument.content).length && assetResolution.ids.length) {
+        await mediaStore.removeMany(assetResolution.ids)
+        assetResolution.ids.forEach(id => {
+          const url = assetObjectUrls.get(id)
+          if (url) { URL.revokeObjectURL(url); previewUrlToReference.delete(url); assetObjectUrls.delete(id) }
+        })
+      }
       if (shouldReloadPublishedDocument) loadActiveDocumentIntoEditor()
       state.publishJob = {
         ...state.publishJob,
-        commitSha: String(result?.commit?.sha || ''),
+        commitSha: result.commitSha,
         status: 'deploying',
         message: '提交已完成，正在等待 GitHub Actions 构建和部署。你可以继续编辑下一版草稿。'
       }
@@ -858,6 +1269,28 @@
     elements.fileInput.value = ''
   }
 
+  const importAssets = async fileList => {
+    const files = Array.from(fileList || [])
+    const errors = []
+    let added = 0
+    const fieldPath = pendingAssetFieldPath
+    for (const file of files) {
+      try {
+        const record = await stageAsset(file)
+        added += 1
+        if (fieldPath && activeComponentValues && added === 1) {
+          setValueAtPath(activeComponentValues, fieldPath, assetReference(record.id))
+          renderComponentFields()
+        } else if (!fieldPath) insertAssetRecord(record)
+      } catch (error) {
+        errors.push(`${file.name}：${error.message}`)
+      }
+    }
+    pendingAssetFieldPath = null
+    elements.assetInput.value = ''
+    if (added || errors.length) announce(`已添加 ${added} 个资源${errors.length ? `；${errors.join('；')}` : ''}。`, errors.length && !added ? 'error' : 'success')
+  }
+
   const handleEditorShortcut = event => {
     const primary = event.metaKey || event.ctrlKey
     if (primary && event.key.toLowerCase() === 's') {
@@ -883,11 +1316,12 @@
 
   const bindEvents = () => {
     elements.fileInput.addEventListener('change', event => importFiles(event.target.files))
+    elements.assetInput.addEventListener('change', event => importAssets(event.target.files))
     elements.saveButton.addEventListener('click', () => saveActiveDocument())
     elements.downloadButton.addEventListener('click', downloadActiveDocument)
     elements.publishButton.addEventListener('click', publishActiveDocument)
-    elements.wysiwygTab.addEventListener('click', () => switchMode('wysiwyg'))
-    elements.markdownTab.addEventListener('click', () => switchMode('markdown'))
+    elements.wysiwygTab.addEventListener('click', () => switchMode('wysiwyg').catch(error => announce(error.message, 'error')))
+    elements.markdownTab.addEventListener('click', () => switchMode('markdown').catch(error => announce(error.message, 'error')))
     elements.frontMatter.addEventListener('input', markUnsaved)
     elements.componentTools.addEventListener('click', event => {
       const button = event.target.closest('[data-component]')
@@ -914,7 +1348,13 @@
       event.preventDefault()
       updateActiveComponent('delete')
     })
-    elements.componentDialog.addEventListener('close', () => { activeComponentId = '' })
+    elements.componentDialog.addEventListener('close', () => {
+      if (pendingSourceComponentId) componentEntries = componentEntries.filter(item => item.id !== pendingSourceComponentId)
+      activeComponentId = ''
+      activeComponentValues = null
+      pendingAssetFieldPath = null
+      pendingSourceComponentId = ''
+    })
     elements.connectButton.addEventListener('click', () => connectGithub().catch(error => console.error(error)))
     elements.syncButton.addEventListener('click', () => syncRemoteDocuments().then(count => announce(`已重新同步 ${count} 个共享页面。`)).catch(error => announce(`同步失败：${error.message}`, 'error')))
     elements.disconnectButton.addEventListener('click', disconnectGithub)
@@ -945,7 +1385,10 @@
       render()
       if (isPublishLocked(state.publishJob)) watchDeployment(state.publishJob)
     })
-    window.addEventListener('beforeunload', () => saveActiveDocument({ silent: true, noRender: true }))
+    window.addEventListener('beforeunload', () => {
+      saveActiveDocument({ silent: true, noRender: true })
+      assetObjectUrls.forEach(url => URL.revokeObjectURL(url))
+    })
   }
 
   const initialize = () => {

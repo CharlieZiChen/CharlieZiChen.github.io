@@ -183,6 +183,7 @@
   data-default-repo="CharlieZiChen-blog-source"
   data-default-branch="main"
   data-base-path="source/pages"
+  data-asset-base-path="source/uploads"
   data-site-url="https://charliezichen.github.io">
   <section class="mdw-intro" aria-labelledby="mdw-intro-title">
     <div>
@@ -282,6 +283,17 @@
           <textarea id="mdw-front-matter" spellcheck="false"></textarea>
         </details>
 
+        <details id="mdw-media" class="mdw-media">
+          <summary><strong>图片与附件</strong><span>可粘贴图片，也可先暂存文件并随文稿一次发布</span></summary>
+          <div class="mdw-media-actions">
+            <input id="mdw-asset-input" class="mdw-visually-hidden" type="file" accept=".jpg,.jpeg,.png,.webp,.gif,.pdf,.txt,.csv,.zip,.docx,.xlsx,.pptx" multiple>
+            <label class="mdw-button mdw-button-secondary" for="mdw-asset-input"><i class="fas fa-paperclip" aria-hidden="true"></i> 选择图片或文件</label>
+            <span>图片≤5 MiB，文件≤15 MiB，当前文稿合计≤30 MiB</span>
+          </div>
+          <div id="mdw-asset-list" class="mdw-asset-list"></div>
+          <p id="mdw-asset-empty" class="mdw-media-empty">尚未添加待发布资源。在编辑器中粘贴图片也会出现在这里。</p>
+        </details>
+
         <div id="mdw-rich-editor" class="mdw-rich-editor" aria-label="Markdown 文稿编辑器"></div>
 
         <section id="mdw-deployment" class="mdw-deployment" aria-live="polite" hidden>
@@ -301,9 +313,10 @@
   <dialog id="mdw-component-dialog" class="mdw-component-dialog">
     <form method="dialog">
       <header><div><span class="mdw-dialog-eyebrow">Butterfly 组件</span><h2 id="mdw-component-dialog-title">编辑组件</h2></div><button class="mdw-dialog-close" value="cancel" aria-label="关闭" type="submit">×</button></header>
-      <label>组件参数<input id="mdw-component-args" autocomplete="off"></label>
-      <label id="mdw-component-body-field">组件内容<textarea id="mdw-component-body"></textarea></label>
-      <p class="mdw-dialog-help">组件在正文中作为一个整体移动或删除；参数和内容仍会保存为 Butterfly 原生标签。</p>
+      <div id="mdw-component-fields" class="mdw-component-fields"></div>
+      <p id="mdw-component-error" class="mdw-component-error" role="alert" hidden></p>
+      <details class="mdw-component-source"><summary>查看将要保存的 Butterfly 语法</summary><pre id="mdw-component-source"></pre></details>
+      <p class="mdw-dialog-help">每个参数独立编辑；保存后仍生成 Butterfly 原生标签。图片和文件可填入外部地址，也可选择本地文件。</p>
       <footer><button id="mdw-component-delete" class="mdw-button mdw-button-danger" value="delete" type="submit">删除组件</button><span></span><button class="mdw-button mdw-button-secondary" value="cancel" type="submit">取消</button><button id="mdw-component-save" class="mdw-button mdw-button-primary" value="save" type="submit">保存组件</button></footer>
     </form>
   </dialog>
@@ -313,6 +326,7 @@
 
 <script src="/md-editor/vendor/toastui-editor.js" defer></script>
 <script src="/md-editor/editor-core.js" defer></script>
+<script src="/md-editor/media-store.js" defer></script>
 <script src="/md-editor/butterfly-editor-adapter.js" defer></script>
 <script src="/md-editor/editor.js" defer></script>
 
