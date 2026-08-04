@@ -93,7 +93,7 @@
     },
     gallery: {
       label: '图片画廊',
-      defaults: { mode: 'images', dataUrl: '', button: false, items: [{ alt: '图片说明', source: '/img/example.webp', title: '' }] },
+      defaults: { mode: 'images', dataUrl: '', button: false, items: [{ alt: '图片说明', source: '/img/logo.webp', title: '' }] },
       fields: [
         select('mode', '数据模式', [{ label: '图片列表', value: 'images' }, { label: '远程 JSON', value: 'url' }]),
         text('dataUrl', '远程 JSON 地址', { inputMode: 'url', placeholder: 'https://example.com/gallery.json' }), checkbox('button', '显示加载更多按钮'),
@@ -102,22 +102,22 @@
     },
     galleryGroup: {
       label: '画廊分组',
-      defaults: { name: '相册', description: '相册说明', url: '/photos/', image: '/img/example.webp' },
+      defaults: { name: '相册', description: '相册说明', url: '/photos/', image: '/img/logo.webp' },
       fields: [text('name', '分组名称', { required: true }), text('description', '分组说明'), text('url', '目标链接', { required: true }), asset('image', '封面图', { required: true, accept: 'image' })]
     },
     inlineImg: {
       label: '行内图片',
-      defaults: { source: '/img/example.webp', height: '24px' },
+      defaults: { source: '/img/logo.webp', height: '24px' },
       fields: [asset('source', '图片', { required: true, accept: 'image' }), text('height', '高度', { placeholder: '24px' })]
     },
     pdf: {
       label: 'PDF',
-      defaults: { source: '/pdf/example.pdf' },
+      defaults: { source: '' },
       fields: [asset('source', 'PDF 文件或地址', { required: true, accept: 'pdf' })]
     },
     flink: {
       label: '友链卡片',
-      defaults: { groups: [{ name: '友情链接', description: '值得访问的站点', links: [{ name: '示例', url: 'https://example.com', avatar: '/img/avatar.webp', description: '站点说明', color: '#49b1f5' }] }] },
+      defaults: { groups: [{ name: '友情链接', description: '值得访问的站点', links: [{ name: '示例', url: 'https://example.com', avatar: '/img/logo.webp', description: '站点说明', color: '#49b1f5' }] }] },
       fields: [repeater('groups', '分组', [
         text('name', '分组名称', { required: true }), text('description', '分组说明'),
         repeater('links', '链接', [text('name', '站点名称', { required: true }), text('url', '站点链接', { required: true }), asset('avatar', '头像', { required: true, accept: 'image' }), text('description', '站点说明'), color('color', '卡片颜色')], { addLabel: '添加链接', minItems: 1 })

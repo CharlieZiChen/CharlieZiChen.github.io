@@ -298,7 +298,7 @@
 
         <section id="mdw-deployment" class="mdw-deployment" aria-live="polite" hidden>
           <div class="mdw-deployment-icon"><i class="fas fa-cloud-upload-alt" aria-hidden="true"></i></div>
-          <div class="mdw-deployment-copy"><h2 id="mdw-deployment-title">发布状态</h2><p id="mdw-deployment-message"></p><div class="mdw-progress" aria-hidden="true"><span id="mdw-progress-bar"></span></div></div>
+          <div class="mdw-deployment-copy"><h2 id="mdw-deployment-title">发布状态</h2><p id="mdw-deployment-message"></p><pre id="mdw-deployment-error" class="mdw-deployment-error" hidden></pre><div class="mdw-progress" aria-hidden="true"><span id="mdw-progress-bar"></span></div></div>
           <div class="mdw-deployment-actions">
             <a id="mdw-live-link" class="mdw-button mdw-button-primary" target="_blank" rel="noopener noreferrer" hidden>查看共享页面</a>
             <a id="mdw-actions-link" class="mdw-button mdw-button-secondary" target="_blank" rel="noopener noreferrer" hidden>构建详情</a>
@@ -313,6 +313,7 @@
   <dialog id="mdw-component-dialog" class="mdw-component-dialog">
     <form method="dialog">
       <header><div><span class="mdw-dialog-eyebrow">Butterfly 组件</span><h2 id="mdw-component-dialog-title">编辑组件</h2></div><button class="mdw-dialog-close" value="cancel" aria-label="关闭" type="submit">×</button></header>
+      <section class="mdw-component-preview-section" aria-labelledby="mdw-component-preview-title"><div class="mdw-component-preview-heading"><strong id="mdw-component-preview-title">即时预览</strong><span>参数改变会立即反映在这里</span></div><div id="mdw-component-preview" class="mdw-component-preview"></div></section>
       <div id="mdw-component-fields" class="mdw-component-fields"></div>
       <p id="mdw-component-error" class="mdw-component-error" role="alert" hidden></p>
       <details class="mdw-component-source"><summary>查看将要保存的 Butterfly 语法</summary><pre id="mdw-component-source"></pre></details>
@@ -328,6 +329,7 @@
 <script src="/md-editor/editor-core.js" defer></script>
 <script src="/md-editor/media-store.js" defer></script>
 <script src="/md-editor/butterfly-editor-adapter.js" defer></script>
+<script src="/md-editor/component-preview.js" defer></script>
 <script src="/md-editor/editor.js" defer></script>
 
 </div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2026 By CharlieZC</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">Hi , welcome to my <a href="https://charliezichen.github.io/">blog</a>!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>let pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]

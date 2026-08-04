@@ -618,6 +618,12 @@
   white-space: nowrap;
 }
 .mdw-butterfly-widget-action { color: var(--mdw-accent); font-size: 0.78rem; font-weight: 700; }
+.mdw-butterfly-widget-preview {
+  grid-column: 1 / -1;
+  padding-top: 0.65rem;
+  border-top: 1px solid var(--mdw-border);
+  pointer-events: none;
+}
 
 .mdw-deployment {
   display: grid;
@@ -642,6 +648,18 @@
 }
 .mdw-deployment h2 { font-size: 1rem; }
 .mdw-deployment p { margin-top: 0.25rem; color: var(--mdw-muted); font-size: 0.86rem; }
+.mdw-deployment-error {
+  max-height: 150px;
+  margin: 0.55rem 0 0;
+  padding: 0.65rem 0.75rem;
+  overflow: auto;
+  border: 1px solid color-mix(in srgb, #d83b57 35%, var(--mdw-border));
+  border-radius: 8px;
+  background: color-mix(in srgb, #d83b57 9%, var(--mdw-panel));
+  color: #c5324c;
+  font: 0.76rem/1.55 Consolas, Menlo, "PingFang SC", monospace;
+  white-space: pre-wrap;
+}
 .mdw-progress {
   height: 5px;
   margin-top: 0.55rem;
@@ -683,6 +701,63 @@
 .mdw-component-dialog textarea { min-height: 220px; padding: 0.75rem; resize: vertical; line-height: 1.6; }
 .mdw-dialog-help { margin: 0; color: var(--mdw-muted); font-size: 0.8rem; }
 .mdw-component-dialog footer span { flex: 1; }
+
+.mdw-component-preview-section {
+  padding: 0.8rem;
+  border: 1px solid var(--mdw-border);
+  border-radius: 11px;
+  background: color-mix(in srgb, var(--mdw-accent) 4%, var(--mdw-panel));
+}
+.mdw-component-preview-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.7rem;
+  margin-bottom: 0.65rem;
+  font-size: 0.84rem;
+}
+.mdw-component-preview-heading span { color: var(--mdw-muted); font-size: 0.75rem; }
+.mdw-component-preview { min-height: 54px; }
+.mdw-component-render { color: var(--font-color, #4c4948); line-height: 1.65; }
+.mdw-component-preview-body { white-space: pre-wrap; }
+.mdw-preview-note { padding: 0.75rem 0.9rem; border-left: 4px solid var(--mdw-accent); border-radius: 8px; background: var(--mdw-panel); }
+.mdw-preview-note.is-success { border-left-color: #2eaf6d; }
+.mdw-preview-note.is-warning { border-left-color: #f0a020; }
+.mdw-preview-note.is-danger { border-left-color: #d83b57; }
+.mdw-preview-label { padding: 0.13rem 0.45rem; border-radius: 5px; background: color-mix(in srgb, var(--mdw-accent) 18%, var(--mdw-panel)); color: inherit; }
+.mdw-preview-button { display: inline-flex; padding: 0.45rem 0.8rem; border: 1px solid var(--mdw-accent); border-radius: 8px; background: var(--mdw-accent); color: #fff; font-weight: 700; text-decoration: none; }
+.mdw-preview-button.is-outline { background: transparent; color: var(--mdw-accent); }
+.mdw-preview-button.is-block { display: flex; width: 100%; justify-content: center; }
+.mdw-preview-button.is-larger { padding: 0.65rem 1rem; font-size: 1.05rem; }
+.mdw-component-render.is-centered { text-align: center; }
+.mdw-preview-disclosure { border: 1px solid var(--mdw-border); border-radius: 8px; overflow: hidden; }
+.mdw-preview-disclosure summary { padding: 0.48rem 0.7rem; cursor: pointer; }
+.mdw-preview-disclosure > :not(summary) { padding: 0.65rem 0.75rem; }
+.mdw-preview-caption { margin-bottom: 0.45rem; color: var(--mdw-muted); font-size: 0.76rem; font-weight: 700; }
+.mdw-preview-tabs { border: 1px solid var(--mdw-border); border-radius: 9px; overflow: hidden; }
+.mdw-preview-tab-nav { display: flex; gap: 0.2rem; padding: 0.35rem; border-bottom: 1px solid var(--mdw-border); background: var(--mdw-soft); }
+.mdw-preview-tab-nav button { padding: 0.35rem 0.65rem; border: 0; border-radius: 6px; background: transparent; color: inherit; cursor: pointer; }
+.mdw-preview-tab-nav button.is-active { background: var(--mdw-accent); color: #fff; }
+.mdw-preview-tab-panels { padding: 0.7rem; }
+.mdw-preview-timeline { display: grid; gap: 0.55rem; padding-left: 0.8rem; border-left: 3px solid var(--mdw-accent); }
+.mdw-preview-timeline-item { position: relative; padding: 0.55rem 0.7rem; border: 1px solid var(--mdw-border); border-radius: 8px; background: var(--mdw-panel); }
+.mdw-preview-timeline-item strong { display: block; margin-bottom: 0.2rem; }
+.mdw-preview-gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 0.55rem; }
+.mdw-preview-gallery figure { margin: 0; overflow: hidden; border: 1px solid var(--mdw-border); border-radius: 8px; background: var(--mdw-panel); }
+.mdw-preview-gallery figcaption { padding: 0.35rem 0.5rem; color: var(--mdw-muted); font-size: 0.72rem; }
+.mdw-component-preview-image { display: block; max-width: 100%; object-fit: cover; }
+.mdw-preview-gallery .mdw-component-preview-image { width: 100%; height: 100px; }
+.mdw-preview-gallery-group { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 0.2rem 0.65rem; align-items: center; padding: 0.55rem; border: 1px solid var(--mdw-border); border-radius: 9px; background: var(--mdw-panel); }
+.mdw-preview-gallery-group img { grid-row: 1 / 3; width: 64px; height: 64px; border-radius: 7px; object-fit: cover; }
+.mdw-preview-gallery-group span { color: var(--mdw-muted); font-size: 0.78rem; }
+.mdw-preview-file-card { display: grid; gap: 0.15rem; padding: 0.7rem; border: 1px dashed var(--mdw-border); border-radius: 8px; background: var(--mdw-panel); }
+.mdw-preview-file-card span { overflow-wrap: anywhere; color: var(--mdw-muted); font-size: 0.76rem; }
+.mdw-preview-link-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.5rem; margin-bottom: 0.7rem; }
+.mdw-preview-link-card { display: grid; grid-template-columns: 38px minmax(0, 1fr); gap: 0.1rem 0.55rem; align-items: center; padding: 0.55rem; border: 1px solid var(--mdw-border); border-left-width: 3px; border-radius: 8px; background: var(--mdw-panel); }
+.mdw-preview-link-card img { grid-row: 1 / 3; width: 38px; height: 38px; border-radius: 50%; object-fit: cover; }
+.mdw-preview-link-card span { overflow: hidden; color: var(--mdw-muted); font-size: 0.72rem; text-overflow: ellipsis; white-space: nowrap; }
+.mdw-preview-lightweight-note { margin-bottom: 0.35rem; color: var(--mdw-muted); font-size: 0.74rem; }
+.mdw-preview-code { max-height: 180px; margin: 0; padding: 0.65rem; overflow: auto; border-radius: 8px; background: color-mix(in srgb, var(--global-bg, #fff) 74%, var(--mdw-panel)); font: 0.76rem/1.55 Consolas, Menlo, monospace; white-space: pre-wrap; }
 
 .mdw-component-fields {
   display: grid;

@@ -211,11 +211,11 @@
     { id: 'subtabs', label: '二级标签页', description: '在标签页中插入子标签', snippet: '{% subtabs 子标签页,1 %}\n<!-- tab 标签一 -->\n{{selection}}\n<!-- endtab -->\n{% endsubtabs %}', placeholder: '子标签内容', select: '子标签内容' },
     { id: 'subsubtabs', label: '三级标签页', description: '在子标签中继续分组', snippet: '{% subsubtabs 三级标签页,1 %}\n<!-- tab 标签一 -->\n{{selection}}\n<!-- endtab -->\n{% endsubsubtabs %}', placeholder: '三级标签内容', select: '三级标签内容' },
     { id: 'timeline', label: '时间线', description: '按阶段组织内容', snippet: '{% timeline 时间线,blue %}\n<!-- timeline 阶段一 -->\n{{selection}}\n<!-- endtimeline -->\n{% endtimeline %}', placeholder: '阶段内容', select: '阶段内容' },
-    { id: 'gallery', label: '图片画廊', description: '将多张图片排成画廊', snippet: '{% gallery %}\n![图片说明](/img/example.webp)\n{% endgallery %}', select: '/img/example.webp' },
-    { id: 'galleryGroup', label: '画廊分组', description: '为图片集创建封面入口', snippet: '{% galleryGroup 相册 相册说明 /photos/ /img/example.webp %}', inline: true },
-    { id: 'inlineImg', label: '行内图片', description: '在文字中插入小图', snippet: '{% inlineImg /img/example.webp 24px %}', select: '/img/example.webp', inline: true },
-    { id: 'pdf', label: 'PDF', description: '嵌入站内或外部 PDF', snippet: '{% pdf /pdf/example.pdf %}', select: '/pdf/example.pdf' },
-    { id: 'flink', label: '友链卡片', description: '用结构化表单维护友情链接', snippet: '{% flink %}\n- class_name: 友情链接\n  class_desc: 值得访问的站点\n  link_list:\n    - name: 示例\n      link: https://example.com\n      avatar: /img/avatar.webp\n      descr: 站点说明\n      theme_color: "#49b1f5"\n{% endflink %}' },
+    { id: 'gallery', label: '图片画廊', description: '将多张图片排成画廊', snippet: '{% gallery %}\n![图片说明](/img/logo.webp)\n{% endgallery %}', select: '/img/logo.webp' },
+    { id: 'galleryGroup', label: '画廊分组', description: '为图片集创建封面入口', snippet: '{% galleryGroup 相册 相册说明 /photos/ /img/logo.webp %}', inline: true },
+    { id: 'inlineImg', label: '行内图片', description: '在文字中插入小图', snippet: '{% inlineImg /img/logo.webp 24px %}', select: '/img/logo.webp', inline: true },
+    { id: 'pdf', label: 'PDF', description: '嵌入站内或外部 PDF', snippet: '{% pdf %}' },
+    { id: 'flink', label: '友链卡片', description: '用结构化表单维护友情链接', snippet: '{% flink %}\n- class_name: 友情链接\n  class_desc: 值得访问的站点\n  link_list:\n    - name: 示例\n      link: https://example.com\n      avatar: /img/logo.webp\n      descr: 站点说明\n      theme_color: "#49b1f5"\n{% endflink %}' },
     { id: 'mermaid', label: 'Mermaid 图表', description: '插入流程图、时序图等', snippet: '{% mermaid %}\ngraph TD\n  A[开始] --> B[结束]\n{% endmermaid %}' },
     { id: 'score', label: 'ABC 乐谱', description: '插入 ABC 记谱法内容', snippet: '{% score %}\nX:1\nT:示例\nM:4/4\nK:C\nC D E F|G A B c|\n{% endscore %}' }
   ])
@@ -235,6 +235,111 @@
 
   const replaceAssetReferences = (source, replacements = {}) => normalizeContent(source)
     .replace(ASSET_REFERENCE_PATTERN, (raw, id) => replacements[id.toLowerCase()] || raw)
+
+  const withoutFencedCode = source => {
+    const output = []
+    let activeFence = null
+    normalizeContent(source).split('\n').forEach(line => {
+      const fence = line.match(/^\s*(`{3,}|~{3,})(.*)$/)
+      if (!activeFence && fence) {
+        activeFence = { character: fence[1][0], length: fence[1].length }
+        output.push('')
+        return
+      }
+      if (activeFence) {
+        const closing = new RegExp(`^\\s*${escapeRegExp(activeFence.character)}{${activeFence.length},}\\s*$`)
+        if (closing.test(line)) activeFence = null
+        output.push('')
+        return
+      }
+      output.push(line)
+    })
+    return output.join('\n')
+  }
+
+  const findReferencedSitePaths = source => {
+    const paths = []
+    const seen = new Set()
+    const pattern = /\/(?:img|pdf|uploads|picture)\/[^\s"'<>()[\]{}]+/gi
+    const content = withoutFencedCode(source).replace(/https?:\/\/[^\s"'<>()[\]{}]+/gi, '')
+    for (const match of content.matchAll(pattern)) {
+      const path = match[0].replace(/[.,;:!?，。；：！？]+$/g, '')
+      if (!seen.has(path)) paths.push(path)
+      seen.add(path)
+    }
+    return paths
+  }
+
+  const candidateRepositoryPathsForPublicAsset = publicPath => {
+    const path = String(publicPath || '').split(/[?#]/)[0].replace(/^\/+/, '')
+    if (!/^(?:img|pdf|uploads|picture)\//i.test(path)) return []
+    const candidates = [`source/${path}`]
+    if (/^(?:img|picture)\//i.test(path)) candidates.push(`themes/butterfly/source/${path}`)
+    return candidates
+  }
+
+  const validateMarkdownStructure = source => {
+    const errors = []
+    const parsed = splitFrontMatter(source)
+    let activeFence = null
+    parsed.body.split('\n').forEach((line, index) => {
+      if (activeFence) {
+        const closing = new RegExp(`^\\s*${escapeRegExp(activeFence.character)}{${activeFence.length},}\\s*$`)
+        if (closing.test(line)) activeFence = null
+        return
+      }
+      const opening = line.match(/^\s*(`{3,}|~{3,})(?:\s*[^\s`~].*)?\s*$/)
+      if (opening) activeFence = { character: opening[1][0], length: opening[1].length, lineNumber: index + 1 }
+    })
+    if (activeFence) errors.push(`第 ${activeFence.lineNumber} 行开始的代码块缺少结束标记`)
+    return errors
+  }
+
+  const deriveWorkflowState = (run, jobs = []) => {
+    if (!run) return { status: 'waiting', message: '正在等待 GitHub Actions 接收本次提交。', progress: 48 }
+    const runUrl = String(run.html_url || '')
+    if (run.status !== 'completed') {
+      const runningJob = jobs.find(job => job.status === 'in_progress')
+      const runningStep = runningJob?.steps?.find(step => step.status === 'in_progress')
+      const detail = runningStep?.name || runningJob?.name || run.name || '构建与部署'
+      return { status: 'deploying', message: `GitHub Actions 正在执行：${detail}`, progress: 68, runUrl }
+    }
+    if (run.conclusion === 'success') {
+      return { status: 'succeeded', message: 'GitHub Actions 已成功，正在确认公开页面版本。', progress: 92, runUrl }
+    }
+    const failedJob = jobs.find(job => !['success', 'skipped', 'neutral'].includes(job.conclusion))
+    const failedStep = failedJob?.steps?.find(step => !['success', 'skipped', 'neutral', null].includes(step.conclusion))
+    const conclusionLabels = {
+      action_required: '需要人工确认', cancelled: '已取消', failure: '失败', stale: '已失效', timed_out: '超时'
+    }
+    const conclusion = conclusionLabels[run.conclusion] || run.conclusion || '失败'
+    const location = failedStep?.name || failedJob?.name || run.name || '构建与部署'
+    return {
+      status: 'failed',
+      message: `GitHub Actions ${conclusion}：${location}`,
+      progress: 0,
+      runUrl,
+      failedJobId: failedJob?.id || null,
+      failedStep: failedStep?.name || ''
+    }
+  }
+
+  const extractWorkflowLogError = source => {
+    const lines = normalizeContent(source)
+      .replace(/\u001b\[[0-9;]*m/g, '')
+      .split('\n')
+      .map(line => line.replace(/^\d{4}-\d\d-\d\dT[^\s]+\s+/, '').trim())
+      .filter(Boolean)
+    const missingReference = lines.find(line => /(?:^|\s)pages\/[^:]+:\s+\/\S+\s+->\s+\S+/.test(line))
+    if (missingReference) return missingReference.slice(0, 600)
+    const annotations = lines
+      .filter(line => line.includes('##[error]'))
+      .map(line => line.replace(/^.*?##\[error\]\s*/, ''))
+      .filter(line => line && !/^Process completed with exit code/i.test(line))
+    if (annotations.length) return annotations.at(-1).slice(0, 600)
+    const errors = lines.filter(line => /(?:^|\s)(?:error|fatal):\s+/i.test(line))
+    return (errors.at(-1) || '').slice(0, 600)
+  }
 
   const sanitizeAssetFileName = value => {
     const source = String(value || 'file').normalize('NFKC')
@@ -437,12 +542,16 @@
     applyTextEdit,
     buildAssetPaths,
     BUTTERFLY_COMPONENTS,
+    candidateRepositoryPathsForPublicAsset,
     contentHash,
     createPublishJob,
     decodeBase64,
+    deriveWorkflowState,
     deriveTitle,
     encodeBase64,
+    extractWorkflowLogError,
     findAssetIds,
+    findReferencedSitePaths,
     isPublishLocked,
     mergeRemoteDocuments,
     migrateDocument,
@@ -456,6 +565,7 @@
     slugify,
     splitFrontMatter,
     splitMarkdownBlocks,
-    stripManagedDocumentChrome
+    stripManagedDocumentChrome,
+    validateMarkdownStructure
   }
 })

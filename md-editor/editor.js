@@ -6,9 +6,10 @@
 
   const core = globalThis.MarkdownEditorCore
   const adapter = globalThis.ButterflyEditorAdapter
+  const componentPreview = globalThis.ButterflyComponentPreview
   const mediaStore = globalThis.MarkdownMediaStore
   const ToastEditor = globalThis.toastui?.Editor
-  if (!core || !adapter || !mediaStore || !ToastEditor) {
+  if (!core || !adapter || !componentPreview || !mediaStore || !ToastEditor) {
     console.error('Markdown 工作台依赖未加载。')
     return
   }
@@ -16,12 +17,16 @@
   const {
     BUTTERFLY_COMPONENTS,
     buildAssetPaths,
+    candidateRepositoryPathsForPublicAsset,
     contentHash,
     createPublishJob,
     decodeBase64,
+    deriveWorkflowState,
     deriveTitle,
     encodeBase64,
+    extractWorkflowLogError,
     findAssetIds,
+    findReferencedSitePaths,
     isPublishLocked,
     mergeRemoteDocuments,
     migrateDocument,
@@ -32,7 +37,8 @@
     replaceAssetReferences,
     slugify,
     splitFrontMatter,
-    stripManagedDocumentChrome
+    stripManagedDocumentChrome,
+    validateMarkdownStructure
   } = core
 
   const STORAGE_KEY = root.dataset.storageKey || 'charliezc.md-pages.v1'
@@ -55,6 +61,7 @@
     componentDialogTitle: document.getElementById('mdw-component-dialog-title'),
     componentError: document.getElementById('mdw-component-error'),
     componentFields: document.getElementById('mdw-component-fields'),
+    componentPreview: document.getElementById('mdw-component-preview'),
     componentSave: document.getElementById('mdw-component-save'),
     componentSource: document.getElementById('mdw-component-source'),
     componentTools: document.getElementById('mdw-component-tools'),
@@ -65,6 +72,7 @@
     connectButton: document.getElementById('mdw-connect-button'),
     connectionStatus: document.getElementById('mdw-connection-status'),
     deployment: document.getElementById('mdw-deployment'),
+    deploymentError: document.getElementById('mdw-deployment-error'),
     deploymentMessage: document.getElementById('mdw-deployment-message'),
     deploymentRecheck: document.getElementById('mdw-deployment-recheck'),
     deploymentTitle: document.getElementById('mdw-deployment-title'),
@@ -115,10 +123,12 @@
   let activeComponentId = ''
   let activeComponentValues = null
   let pendingSourceComponentId = ''
+  let pendingVisualComponentId = ''
   let githubToken = ''
   let saveTimer = 0
   let statusTimer = 0
   let deploymentRun = 0
+  let actionsReadable = null
   let publishPreparing = false
   let suppressEditorChange = false
   let editorLoadSequence = 0
@@ -241,6 +251,16 @@
     elements.connectionStatus.dataset.state = type
   }
 
+  const resolvePreviewAsset = value => {
+    const source = String(value || '')
+    const stagedId = source.match(/^mdw-asset:\/\/([a-z0-9-]+)$/i)?.[1]?.toLowerCase()
+    return stagedId ? (assetObjectUrls.get(stagedId) || '') : source
+  }
+
+  const renderComponentPreviewNode = (entry, values = entry?.values) => entry
+    ? componentPreview.render(entry.name, values || adapter.valuesFromEntry(entry), { document, resolveAsset: resolvePreviewAsset })
+    : null
+
   const createWidget = text => {
     const id = text.match(/BUTTERFLY_COMPONENT_([a-z0-9-]+)/i)?.[1] || ''
     const entry = componentEntries.find(item => item.id === id)
@@ -263,6 +283,11 @@
     action.className = 'mdw-butterfly-widget-action'
     action.textContent = '编辑'
     card.append(badge, title, summary, action)
+    const visual = document.createElement('span')
+    visual.className = 'mdw-butterfly-widget-preview'
+    const rendered = renderComponentPreviewNode(entry)
+    if (rendered) visual.append(rendered)
+    card.append(visual)
     return card
   }
 
@@ -538,6 +563,7 @@
       const entry = adapter.entryFromComponent(component)
       if (!entry) return
       componentEntries.push(entry)
+      pendingVisualComponentId = entry.id
       editor.insertText(`${component.inline ? '' : '\n'}${entry.placeholder}${component.inline ? '' : '\n'}`)
       requestAnimationFrame(() => openComponentDialog(entry.id))
     }
@@ -567,6 +593,9 @@
     const preview = { ...entry, values: JSON.parse(JSON.stringify(activeComponentValues)) }
     adapter.applyValues(preview, preview.values)
     elements.componentSource.textContent = adapter.serializeEntry(preview)
+    elements.componentPreview.replaceChildren()
+    const rendered = renderComponentPreviewNode(preview, preview.values)
+    if (rendered) elements.componentPreview.append(rendered)
   }
 
   const renderField = (field, values, path, container) => {
@@ -746,6 +775,7 @@
     if (action === 'delete') {
       const markdown = editor.getMarkdown().split(entry.placeholder).join('')
       componentEntries = componentEntries.filter(item => item.id !== entry.id)
+      if (entry.id === pendingVisualComponentId) pendingVisualComponentId = ''
       suppressEditorChange = true
       editor.setMarkdown(markdown, false)
       requestAnimationFrame(() => {
@@ -760,8 +790,14 @@
         return
       }
       adapter.applyValues(entry, activeComponentValues)
+      if (entry.id === pendingVisualComponentId) pendingVisualComponentId = ''
       elements.richEditor.querySelectorAll(`[data-component-id="${entry.id}"] .mdw-butterfly-widget-summary`).forEach(summary => {
         summary.textContent = adapter.summarizeEntry(entry)
+      })
+      elements.richEditor.querySelectorAll(`[data-component-id="${entry.id}"] .mdw-butterfly-widget-preview`).forEach(preview => {
+        preview.replaceChildren()
+        const rendered = renderComponentPreviewNode(entry)
+        if (rendered) preview.append(rendered)
       })
       markUnsaved()
     }
@@ -837,7 +873,7 @@
     if (!job) return
     const presentation = {
       committing: ['正在提交', '正在把本次发布快照写入 GitHub。编辑器仍可继续修改并保存下一版草稿。', 22],
-      deploying: ['正在构建与部署', '提交已经完成，正在等待 GitHub Actions 将页面部署到公开站点。', 62],
+      deploying: ['正在构建与部署', '提交已经完成，正在等待 GitHub Actions 将页面部署到公开站点。', job.progress || 62],
       deployed: ['发布完成', '所有访客现在都可以看到本次发布的内容。', 100],
       failed: ['发布失败', job.message || '本次提交失败，可以修正后重新发布。', 0],
       timed_out: ['等待超时', '十分钟内没有检测到目标版本。发布锁仍保留，请检查构建状态后重新检查或结束等待。', 82],
@@ -846,6 +882,8 @@
     elements.deploymentTitle.textContent = presentation[0]
     elements.deploymentMessage.textContent = job.message || presentation[1]
     elements.progressBar.style.width = `${presentation[2]}%`
+    elements.deploymentError.textContent = job.errorDetail || ''
+    elements.deploymentError.hidden = !job.errorDetail
     elements.liveLink.hidden = job.status !== 'deployed' || !job.publishedUrl
     if (job.publishedUrl) elements.liveLink.href = job.publishedUrl
     elements.actionsLink.hidden = !job.actionsUrl
@@ -934,6 +972,21 @@
     return remoteDocuments.length
   }
 
+  const probeActionsPermission = async repository => {
+    try {
+      await githubRequest(`${repositoryEndpoint(repository)}/actions/runs?per_page=1`)
+      actionsReadable = true
+      return true
+    } catch (error) {
+      if ([403, 404].includes(error.status)) {
+        actionsReadable = false
+        return false
+      }
+      actionsReadable = null
+      return null
+    }
+  }
+
   const connectGithub = async (options = {}) => {
     const repository = repositoryFromFields()
     const suppliedToken = elements.token.value.trim()
@@ -951,6 +1004,11 @@
       elements.token.value = ''
       render()
       const count = await syncRemoteDocuments()
+      const canReadActions = await probeActionsPermission(repository)
+      if (canReadActions === false) {
+        setConnectionStatus(`已连接 ${repository.owner}/${repository.repo}，但令牌缺少 Actions 读取权限；发布后只能通过公开页面判断是否完成。`, 'warning')
+      }
+      if (isPublishLocked(state.publishJob)) watchDeployment(state.publishJob)
       if (!options.restoring) announce(`GitHub 已连接，共同步 ${count} 个共享页面。`)
     } catch (error) {
       state.connected = false
@@ -969,9 +1027,71 @@
     githubToken = ''
     state.connected = false
     state.repository = null
+    actionsReadable = null
     sessionStorage.removeItem(SESSION_TOKEN_KEY)
     setConnectionStatus('已断开连接；令牌已从当前标签页移除，本地草稿仍然保留。')
     render()
+  }
+
+  const checkWorkflow = async (job, options = {}) => {
+    if (!job?.commitSha || !githubToken || !state.connected || actionsReadable === false) return { available: false, terminal: false }
+    const repository = job.repository || state.repository
+    if (!repository) return { available: false, terminal: false }
+    const baseEndpoint = repositoryEndpoint(repository)
+    try {
+      const runs = await githubRequest(`${baseEndpoint}/actions/runs?head_sha=${encodeURIComponent(job.commitSha)}&event=push&per_page=10`)
+      const run = runs?.workflow_runs?.find(candidate => candidate.head_sha === job.commitSha) || null
+      let jobs = []
+      if (run) {
+        const response = await githubRequest(`${baseEndpoint}/actions/runs/${encodeURIComponent(run.id)}/jobs?per_page=100`)
+        jobs = Array.isArray(response?.jobs) ? response.jobs : []
+      }
+      actionsReadable = true
+      const workflow = deriveWorkflowState(run, jobs)
+      if (workflow.status === 'failed') {
+        let errorDetail = ''
+        if (workflow.failedJobId) {
+          try {
+            const log = await githubRequest(`${baseEndpoint}/actions/jobs/${encodeURIComponent(workflow.failedJobId)}/logs`, { raw: true })
+            errorDetail = extractWorkflowLogError(log)
+          } catch {
+            // 失败步骤与构建详情链接仍足以定位；日志下载失败不影响状态更新。
+          }
+        }
+        const firstFailure = state.publishJob?.status !== 'failed'
+        state.publishJob = {
+          ...state.publishJob,
+          actionsUrl: workflow.runUrl || state.publishJob.actionsUrl,
+          completedAt: Date.now(),
+          errorDetail: errorDetail || workflow.failedStep || '',
+          message: workflow.message,
+          progress: 0,
+          status: 'failed',
+          workflowRunId: run?.id || null
+        }
+        persistPublishJob()
+        render()
+        if (firstFailure || options.manual) announce(`构建失败：${errorDetail || workflow.message}`, 'error')
+        return { available: true, terminal: true, workflow }
+      }
+      state.publishJob = {
+        ...state.publishJob,
+        actionsUrl: workflow.runUrl || state.publishJob.actionsUrl,
+        message: workflow.message,
+        progress: workflow.progress,
+        workflowRunId: run?.id || null
+      }
+      persistPublishJob()
+      render()
+      return { available: true, terminal: false, workflow }
+    } catch (error) {
+      if ([403, 404].includes(error.status)) {
+        actionsReadable = false
+        if (options.manual) announce('当前令牌无法读取 GitHub Actions；仍会继续检查公开页面。', 'error')
+        return { available: false, terminal: false }
+      }
+      return { available: null, terminal: false }
+    }
   }
 
   const checkDeployment = async (job, options = {}) => {
@@ -997,6 +1117,8 @@
     const currentRun = ++deploymentRun
     const poll = async () => {
       if (currentRun !== deploymentRun || state.publishJob?.id !== job.id || !isPublishLocked(state.publishJob)) return
+      const workflow = await checkWorkflow(state.publishJob)
+      if (workflow.terminal) return
       if (await checkDeployment(state.publishJob)) return
       if (Date.now() >= state.publishJob.deadlineAt) {
         state.publishJob = { ...state.publishJob, status: 'timed_out', message: '十分钟内没有检测到目标版本。请查看构建详情，然后重新检查或手动结束等待。' }
@@ -1024,6 +1146,36 @@
       assets.push({ ...record, ...paths })
     }
     return { assets, content: replaceAssetReferences(snapshot, replacements), ids }
+  }
+
+  const validatePublishSnapshot = async (snapshot, assets = []) => {
+    const structureErrors = validateMarkdownStructure(snapshot)
+    if (structureErrors.length) throw new Error(`Markdown 结构异常：${structureErrors.join('；')}。请先在源码模式修复。`)
+
+    const protectedComponents = adapter.protectMarkdown(snapshot)
+    const componentErrors = protectedComponents.entries.flatMap(entry => adapter
+      .validateValues(entry.name, entry.values)
+      .map(message => `${entry.label}：${message}`))
+    if (componentErrors.length) throw new Error(`组件参数不完整：${componentErrors.join('；')}`)
+
+    const publishedAssets = new Set(assets.map(asset => asset.publicPath))
+    const references = findReferencedSitePaths(snapshot).filter(path => !publishedAssets.has(path))
+    const baseEndpoint = repositoryEndpoint(state.repository)
+    const tree = references.length
+      ? await githubRequest(`${baseEndpoint}/git/trees/${encodeURIComponent(state.repository.branch)}?recursive=1`)
+      : { tree: [] }
+    const repositoryPaths = new Set((tree?.tree || []).map(item => item.path))
+    const missing = tree?.truncated
+      ? (await Promise.all(references.map(async publicPath => {
+          for (const candidate of candidateRepositoryPathsForPublicAsset(publicPath)) {
+            const endpoint = `${baseEndpoint}/contents/${encodePath(candidate)}?ref=${encodeURIComponent(state.repository.branch)}`
+            if (await githubRequest(endpoint, { allow404: true })) return ''
+          }
+          return publicPath
+        }))).filter(Boolean)
+      : references.filter(publicPath => !candidateRepositoryPathsForPublicAsset(publicPath)
+          .some(candidate => repositoryPaths.has(candidate)))
+    if (missing.length) throw new Error(`以下站内资源不存在：${missing.join('、')}。请上传文件或更正路径。`)
   }
 
   const createAtomicPublishCommit = async ({ assets, currentExists, prepared }) => {
@@ -1094,6 +1246,7 @@
     try {
       const slug = slugify(document.slug || document.fileName.replace(/\.md$/i, ''))
       assetResolution = await resolvePublishAssets(snapshot, slug)
+      await validatePublishSnapshot(assetResolution.content, assetResolution.assets)
       prepared = prepareManagedDocument(assetResolution.content, {
         basePath: state.repository.basePath,
         fileName: document.fileName,
@@ -1350,10 +1503,22 @@
     })
     elements.componentDialog.addEventListener('close', () => {
       if (pendingSourceComponentId) componentEntries = componentEntries.filter(item => item.id !== pendingSourceComponentId)
+      if (pendingVisualComponentId) {
+        const pending = componentEntries.find(item => item.id === pendingVisualComponentId)
+        const markdown = pending ? editor.getMarkdown().split(pending.placeholder).join('') : editor.getMarkdown()
+        componentEntries = componentEntries.filter(item => item.id !== pendingVisualComponentId)
+        suppressEditorChange = true
+        editor.setMarkdown(markdown, false)
+        requestAnimationFrame(() => {
+          suppressEditorChange = false
+          markUnsaved()
+        })
+      }
       activeComponentId = ''
       activeComponentValues = null
       pendingAssetFieldPath = null
       pendingSourceComponentId = ''
+      pendingVisualComponentId = ''
     })
     elements.connectButton.addEventListener('click', () => connectGithub().catch(error => console.error(error)))
     elements.syncButton.addEventListener('click', () => syncRemoteDocuments().then(count => announce(`已重新同步 ${count} 个共享页面。`)).catch(error => announce(`同步失败：${error.message}`, 'error')))
@@ -1361,7 +1526,10 @@
     elements.conflictDownload.addEventListener('click', downloadConflictVersions)
     elements.conflictLocal.addEventListener('click', () => resolveConflict('local'))
     elements.conflictRemote.addEventListener('click', () => resolveConflict('remote'))
-    elements.deploymentRecheck.addEventListener('click', () => checkDeployment(state.publishJob, { manual: true }))
+    elements.deploymentRecheck.addEventListener('click', async () => {
+      const workflow = await checkWorkflow(state.publishJob, { manual: true })
+      if (!workflow.terminal) await checkDeployment(state.publishJob, { manual: true })
+    })
     elements.deploymentUnlock.addEventListener('click', () => {
       if (!window.confirm('结束等待会解除发布锁。请先确认 GitHub Actions 不会继续部署旧版本，确定继续吗？')) return
       deploymentRun += 1

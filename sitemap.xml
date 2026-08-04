@@ -281,7 +281,7 @@
   </url>
   
   <url>
-    <loc>https://charliezichen.github.io/link/</loc>
+    <loc>https://charliezichen.github.io/categories/</loc>
     
     <lastmod>2023-10-25</lastmod>
     
@@ -290,7 +290,7 @@
   </url>
   
   <url>
-    <loc>https://charliezichen.github.io/categories/</loc>
+    <loc>https://charliezichen.github.io/link/</loc>
     
     <lastmod>2023-10-25</lastmod>
     
@@ -359,6 +359,27 @@
   </url>
   
   <url>
+    <loc>https://charliezichen.github.io/tags/Python/</loc>
+    <lastmod>2026-08-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://charliezichen.github.io/tags/MySQL/</loc>
+    <lastmod>2026-08-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://charliezichen.github.io/tags/WebAPI/</loc>
+    <lastmod>2026-08-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>https://charliezichen.github.io/tags/%E4%BF%A1%E5%8F%B7%E5%AD%A6/</loc>
     <lastmod>2026-08-04</lastmod>
     <changefreq>weekly</changefreq>
@@ -388,27 +409,6 @@
   
   <url>
     <loc>https://charliezichen.github.io/tags/%E5%8C%96%E5%AD%A6%E5%8F%8D%E5%BA%94/</loc>
-    <lastmod>2026-08-04</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://charliezichen.github.io/tags/Python/</loc>
-    <lastmod>2026-08-04</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://charliezichen.github.io/tags/MySQL/</loc>
-    <lastmod>2026-08-04</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://charliezichen.github.io/tags/WebAPI/</loc>
     <lastmod>2026-08-04</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -515,14 +515,14 @@
   </url>
   
   <url>
-    <loc>https://charliezichen.github.io/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E5%A4%A7%E4%BA%8C%E4%B8%8A/</loc>
+    <loc>https://charliezichen.github.io/categories/%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5/</loc>
     <lastmod>2026-08-04</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://charliezichen.github.io/categories/%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5/</loc>
+    <loc>https://charliezichen.github.io/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E5%A4%A7%E4%BA%8C%E4%B8%8A/</loc>
     <lastmod>2026-08-04</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
