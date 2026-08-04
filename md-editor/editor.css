@@ -195,7 +195,10 @@
 
 .mdw-button:focus-visible,
 .mdw-document-item:focus-visible,
-.mdw-editor:focus-visible {
+.mdw-editor:focus-visible,
+.mdw-mode-button:focus-visible,
+.mdw-tool-button:focus-visible,
+.mdw-preview-block:focus-visible {
   outline: 3px solid color-mix(in srgb, var(--mdw-accent) 45%, transparent);
   outline-offset: 2px;
 }
@@ -404,9 +407,10 @@
 .mdw-preview pre {
   padding: 1rem;
   overflow: auto;
+  border: 1px solid color-mix(in srgb, var(--mdw-accent) 22%, var(--mdw-border));
   border-radius: 10px;
-  background: #2d333b;
-  color: #e6edf3;
+  background: color-mix(in srgb, var(--mdw-accent) 7%, var(--global-bg, #fff));
+  color: var(--font-color, #4c4948);
   line-height: 1.6;
 }
 
@@ -457,6 +461,217 @@
 
 .mdw-preview .mdw-task-item input {
   margin-right: 0.45rem;
+}
+
+.mdw-workbench-toolbar {
+  display: grid;
+  gap: 0.7rem;
+  margin-top: 1rem;
+  padding: 0.8rem;
+  border: 1px solid var(--mdw-border);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--mdw-accent) 5%, var(--card-bg, #fff));
+}
+
+.mdw-mode-switch,
+.mdw-tool-row,
+.mdw-component-tools {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.mdw-mode-switch {
+  width: fit-content;
+  padding: 0.2rem;
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--font-color, #4c4948) 7%, transparent);
+}
+
+.mdw-mode-button,
+.mdw-tool-button {
+  min-height: 34px;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--font-color, #4c4948);
+  font: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.mdw-mode-button.is-active {
+  background: var(--card-bg, #fff);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--font-color, #4c4948) 12%, transparent);
+  color: var(--mdw-accent);
+  font-weight: 700;
+}
+
+.mdw-tool-row > strong {
+  min-width: 5rem;
+  color: var(--mdw-muted);
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+}
+
+.mdw-component-tools {
+  flex: 1 1 28rem;
+}
+
+.mdw-tool-button {
+  border-color: var(--mdw-border);
+  background: var(--card-bg, #fff);
+}
+
+.mdw-tool-button:hover {
+  border-color: color-mix(in srgb, var(--mdw-accent) 55%, transparent);
+  color: var(--mdw-accent);
+}
+
+.mdw-edit-preview-panel {
+  margin-top: 1rem;
+}
+
+.mdw-preview-selection {
+  margin: 0 0 0.75rem;
+  padding: 0.65rem 0.8rem;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--mdw-accent) 9%, transparent);
+  color: var(--mdw-muted);
+  font-size: 0.84rem;
+}
+
+.mdw-interactive-preview {
+  padding: 0;
+}
+
+.mdw-preview-block {
+  position: relative;
+  margin: 0.3rem 0;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: border-color 0.16s ease, background 0.16s ease, box-shadow 0.16s ease;
+}
+
+.mdw-preview-block:hover {
+  border-color: color-mix(in srgb, var(--mdw-accent) 35%, transparent);
+  background: color-mix(in srgb, var(--mdw-accent) 4%, transparent);
+}
+
+.mdw-preview-block.is-selected {
+  border-color: var(--mdw-accent);
+  background: color-mix(in srgb, var(--mdw-accent) 8%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--mdw-accent) 12%, transparent);
+}
+
+.mdw-preview-block.is-selected::after {
+  content: "组件插入点";
+  position: absolute;
+  right: 0.55rem;
+  bottom: -0.7rem;
+  padding: 0.05rem 0.4rem;
+  border-radius: 999px;
+  background: var(--mdw-accent);
+  color: #fff;
+  font-size: 0.68rem;
+  line-height: 1.6;
+}
+
+.mdw-preview-block > :first-child,
+.mdw-butterfly-note > :first-child,
+.mdw-butterfly-toggle div > :first-child,
+.mdw-butterfly-gallery > :first-child,
+.mdw-butterfly-tabs > :first-child,
+.mdw-butterfly-timeline > :first-child {
+  margin-top: 0;
+}
+
+.mdw-preview-block > :last-child,
+.mdw-butterfly-note > :last-child,
+.mdw-butterfly-toggle div > :last-child,
+.mdw-butterfly-gallery > :last-child,
+.mdw-butterfly-tabs > :last-child,
+.mdw-butterfly-timeline > :last-child {
+  margin-bottom: 0;
+}
+
+.mdw-preview-empty,
+.mdw-component-placeholder {
+  padding: 1rem;
+  border: 1px dashed var(--mdw-border);
+  border-radius: 10px;
+  color: var(--mdw-muted);
+  text-align: center;
+}
+
+.mdw-component-placeholder span {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.8rem;
+}
+
+.mdw-component-name {
+  display: inline-block;
+  margin-bottom: 0.45rem;
+  color: var(--mdw-accent);
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.mdw-butterfly-note,
+.mdw-butterfly-gallery,
+.mdw-butterfly-tabs,
+.mdw-butterfly-timeline,
+.mdw-butterfly-toggle {
+  margin: 0.8rem 0;
+  padding: 0.9rem 1rem;
+  border: 1px solid color-mix(in srgb, var(--mdw-accent) 28%, var(--mdw-border));
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--mdw-accent) 7%, var(--card-bg, #fff));
+}
+
+.mdw-butterfly-note {
+  border-left: 4px solid var(--mdw-accent);
+}
+
+.mdw-butterfly-toggle summary {
+  color: var(--text-highlight-color, #1f2d3d);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.mdw-butterfly-button {
+  display: inline-block;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  background: var(--mdw-accent);
+  color: #fff !important;
+  text-decoration: none;
+}
+
+.mdw-butterfly-label {
+  padding: 0.08rem 0.35rem;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--mdw-accent) 20%, transparent);
+  color: var(--font-color, #4c4948);
+}
+
+.mdw-preview .mdw-butterfly-inline-image {
+  display: inline-block;
+  width: auto;
+  max-width: 8rem;
+  margin: 0 0.2rem;
+  vertical-align: middle;
+}
+
+.mdw-butterfly-inline-hide {
+  padding: 0.08rem 0.35rem;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--font-color, #4c4948) 12%, transparent);
 }
 
 .mdw-editor-label {

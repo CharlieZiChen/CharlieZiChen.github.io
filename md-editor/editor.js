@@ -11,15 +11,20 @@
   }
 
   const {
+    applyTextEdit,
+    BUTTERFLY_COMPONENTS,
     decodeBase64,
     deriveTitle,
     encodeBase64,
     normalizeContent,
+    normalizeMarkdownStructure,
     prepareManagedDocument,
     readFrontMatterValue,
     readManagedVersion,
     slugify,
-    splitFrontMatter
+    splitFrontMatter,
+    splitMarkdownBlocks,
+    stripManagedDocumentChrome
   } = core
 
   const STORAGE_KEY = root.dataset.storageKey || 'charliezc.md-pages.v1'
@@ -40,6 +45,13 @@
     documentMeta: document.getElementById('mdw-document-meta'),
     preview: document.getElementById('mdw-preview'),
     editor: document.getElementById('mdw-editor'),
+    sourceTab: document.getElementById('mdw-source-tab'),
+    previewTab: document.getElementById('mdw-preview-tab'),
+    sourcePanel: document.getElementById('mdw-source-panel'),
+    editPreviewPanel: document.getElementById('mdw-edit-preview-panel'),
+    editPreview: document.getElementById('mdw-edit-preview'),
+    previewSelection: document.getElementById('mdw-preview-selection'),
+    componentTools: document.getElementById('mdw-component-tools'),
     editButton: document.getElementById('mdw-edit-button'),
     saveButton: document.getElementById('mdw-save-button'),
     cancelButton: document.getElementById('mdw-cancel-button'),
@@ -63,6 +75,9 @@
     documents: [],
     activeId: null,
     editing: false,
+    editSurface: 'source',
+    previewSelection: null,
+    sourceSelection: { start: 0, end: 0 },
     originalContent: '',
     connected: false,
     publishing: false,
@@ -246,6 +261,33 @@
     }
     let text = String(source || '')
 
+    text = text.replace(/{%\s*label\s+(.+?)\s*%}/g, (_, raw) => {
+      const parts = raw.trim().split(/\s+/)
+      const color = /^[\w-]+$/.test(parts.at(-1) || '') ? parts.pop() : 'blue'
+      return stash(`<mark class="mdw-butterfly-label mdw-color-${escapeHtml(color)}">${escapeHtml(parts.join(' ') || '标签')}</mark>`)
+    })
+    text = text.replace(/{%\s*btn\s+(.+?)\s*%}/g, (_, raw) => {
+      const [rawUrl, label = '按钮'] = raw.split(',').map(value => value.trim())
+      const url = safeUrl(rawUrl)
+      if (!url) return stash(`<span class="mdw-butterfly-button">${escapeHtml(label)}</span>`)
+      return stash(`<a class="mdw-butterfly-button" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(label)}</a>`)
+    })
+    text = text.replace(/{%\s*inlineImg\s+(\S+)(?:\s+(\S+))?\s*%}/g, (_, rawUrl, rawHeight) => {
+      const url = safeUrl(rawUrl, true)
+      if (!url) return stash('<span class="mdw-component-placeholder">行内图片</span>')
+      const height = /^\d+(?:\.\d+)?(?:px|rem|em|%)$/.test(rawHeight || '') ? rawHeight : '24px'
+      return stash(`<img class="mdw-butterfly-inline-image" src="${escapeHtml(url)}" alt="" style="height:${escapeHtml(height)}" loading="lazy">`)
+    })
+    text = text.replace(/{%\s*hideInline\s+(.+?)\s*%}/g, (_, raw) => {
+      const [content = '隐藏内容', display = '点击查看'] = raw.split(',').map(value => value.trim())
+      return stash(`<span class="mdw-butterfly-inline-hide" title="${escapeHtml(content)}">${escapeHtml(display)}</span>`)
+    })
+    text = text.replace(/{%\s*pdf\s+(.+?)\s*%}/g, (_, rawUrl) => {
+      const url = safeUrl(rawUrl)
+      const label = url ? escapeHtml(url) : 'PDF 文档'
+      return stash(`<span class="mdw-component-placeholder"><i class="far fa-file-pdf" aria-hidden="true"></i> ${label}</span>`)
+    })
+
     text = text.replace(/`([^`\n]+)`/g, (_, code) => stash(`<code>${escapeHtml(code)}</code>`))
     text = text.replace(/!\[([^\]]*)\]\(([^)\s]+)(?:\s+["'][^"']*["'])?\)/g, (_, alt, rawUrl) => {
       const url = safeUrl(rawUrl, true)
@@ -281,8 +323,42 @@
     return cells.length > 0 && cells.every(cell => /^:?-{3,}:?$/.test(cell))
   }
 
+  const renderButterflyBlock = (name, argumentsText, content) => {
+    const label = argumentsText.trim().split(',')[0] || {
+      gallery: '图片画廊',
+      hideBlock: '隐藏内容',
+      hideToggle: '折叠内容',
+      note: '提示块',
+      score: '乐谱',
+      flink: '友链'
+    }[name] || name
+
+    if (name === 'note' || name === 'subnote') {
+      return `<aside class="mdw-butterfly-note"><span class="mdw-component-name">提示块</span>${renderMarkdown(content)}</aside>`
+    }
+    if (name === 'hideToggle' || name === 'hideBlock') {
+      return `<details class="mdw-butterfly-toggle" open><summary>${renderInline(label)}</summary><div>${renderMarkdown(content)}</div></details>`
+    }
+    if (name === 'gallery') {
+      return `<section class="mdw-butterfly-gallery"><span class="mdw-component-name">图片画廊</span>${renderMarkdown(content)}</section>`
+    }
+    if (/tabs$/i.test(name)) {
+      const tabs = content
+        .replace(/<!--\s*tab\s+(.+?)\s*-->/g, '\n### $1\n')
+        .replace(/<!--\s*endtab\s*-->/g, '\n')
+      return `<section class="mdw-butterfly-tabs"><span class="mdw-component-name">标签页 · ${renderInline(label)}</span>${renderMarkdown(tabs)}</section>`
+    }
+    if (name === 'timeline') {
+      const timeline = content
+        .replace(/<!--\s*timeline\s+(.+?)\s*-->/g, '\n### $1\n')
+        .replace(/<!--\s*endtimeline\s*-->/g, '\n')
+      return `<section class="mdw-butterfly-timeline"><span class="mdw-component-name">时间线 · ${renderInline(label)}</span>${renderMarkdown(timeline)}</section>`
+    }
+    return `<section class="mdw-component-placeholder"><strong>${renderInline(label)}</strong><span>此组件将在共享页面中由 Butterfly 渲染。</span></section>`
+  }
+
   const renderMarkdown = source => {
-    const lines = splitFrontMatter(source).body.split('\n')
+    const lines = splitFrontMatter(normalizeMarkdownStructure(source)).body.split('\n')
     const output = []
     const headingCounts = new Map()
 
@@ -298,6 +374,7 @@
       const nextLine = lines[index + 1] || ''
       return !line.trim()
         || /^\s*(```|~~~)/.test(line)
+        || /^\s*{%\s*[\w-]+\b/.test(line)
         || /^#{1,6}\s+/.test(line)
         || /^\s*(?:[-*_]\s*){3,}$/.test(line)
         || /^\s*>/.test(line)
@@ -310,6 +387,21 @@
       const line = lines[index]
       if (!line.trim()) {
         index += 1
+        continue
+      }
+
+      const butterfly = line.match(/^\s*{%\s*(note|subnote|hideBlock|hideToggle|tabs|subtabs|subsubtabs|timeline|gallery|score|flink)\b(.*?)%}\s*$/i)
+      if (butterfly) {
+        const name = butterfly[1]
+        const content = []
+        const closing = new RegExp(`^\\s*{%\\s*end${name}\\s*%}\\s*$`, 'i')
+        index += 1
+        while (index < lines.length && !closing.test(lines[index])) {
+          content.push(lines[index])
+          index += 1
+        }
+        if (index < lines.length) index += 1
+        output.push(renderButterflyBlock(name, butterfly[2], content.join('\n')))
         continue
       }
 
@@ -351,23 +443,49 @@
         continue
       }
 
-      const unordered = line.match(/^\s*[-+*]\s+(.+)$/)
-      const ordered = line.match(/^\s*\d+[.)]\s+(.+)$/)
+      const unordered = line.match(/^(\s*)[-+*]\s*(.*)$/)
+      const ordered = line.match(/^(\s*)\d+[.)]\s*(.*)$/)
       if (unordered || ordered) {
         const listTag = unordered ? 'ul' : 'ol'
-        const matcher = unordered ? /^\s*[-+*]\s+(.+)$/ : /^\s*\d+[.)]\s+(.+)$/
+        const baseIndent = (unordered || ordered)[1].length
+        const matcher = unordered
+          ? new RegExp(`^\\s{${baseIndent}}[-+*]\\s*(.*)$`)
+          : new RegExp(`^\\s{${baseIndent}}\\d+[.)]\\s*(.*)$`)
         const items = []
         while (index < lines.length) {
           const item = lines[index].match(matcher)
           if (!item) break
+          const nested = []
+          index += 1
+          while (index < lines.length) {
+            if (!lines[index].trim()) {
+              let next = index + 1
+              while (next < lines.length && !lines[next].trim()) next += 1
+              if (next < lines.length && matcher.test(lines[next])) {
+                index = next
+                break
+              }
+              if (next < lines.length && lines[next].match(/^\s*/)[0].length > baseIndent) {
+                nested.push('')
+                index += 1
+                continue
+              }
+              break
+            }
+            const indent = lines[index].match(/^\s*/)[0].length
+            if (indent <= baseIndent) break
+            nested.push(lines[index].slice(Math.min(lines[index].length, baseIndent + 2)))
+            index += 1
+          }
+
           const task = item[1].match(/^\[([ xX])\]\s+(.+)$/)
+          const nestedHtml = nested.length ? renderMarkdown(nested.join('\n')) : ''
           if (task) {
             const checked = /x/i.test(task[1]) ? ' checked' : ''
-            items.push(`<li class="mdw-task-item"><input type="checkbox" disabled${checked}>${renderInline(task[2])}</li>`)
+            items.push(`<li class="mdw-task-item"><input type="checkbox" disabled${checked}>${renderInline(task[2])}${nestedHtml}</li>`)
           } else {
-            items.push(`<li>${renderInline(item[1])}</li>`)
+            items.push(`<li>${item[1] ? renderInline(item[1]) : ''}${nestedHtml}</li>`)
           }
-          index += 1
         }
         output.push(`<${listTag}>${items.join('')}</${listTag}>`)
         continue
@@ -402,6 +520,136 @@
     }
 
     return output.join('\n')
+  }
+
+  const renderInteractivePreview = () => {
+    const blocks = splitMarkdownBlocks(elements.editor.value)
+    if (!blocks.length) {
+      elements.editPreview.innerHTML = '<div class="mdw-preview-empty">当前文稿还没有正文。请使用上方工具插入内容，或切换到源码模式输入。</div>'
+      state.previewSelection = null
+      return
+    }
+
+    elements.editPreview.innerHTML = blocks.map((block, index) => `
+      <section class="mdw-preview-block" tabindex="0" role="button"
+        aria-label="选择第 ${index + 1} 个内容块作为插入位置"
+        data-md-start="${block.start}" data-md-end="${block.end}">
+        ${renderMarkdown(block.text)}
+      </section>
+    `).join('')
+
+    if (state.previewSelection) {
+      const selected = Array.from(elements.editPreview.querySelectorAll('.mdw-preview-block'))
+        .find(block => Number(block.dataset.mdStart) === state.previewSelection.start)
+      selected?.classList.add('is-selected')
+    }
+  }
+
+  const rememberSourceSelection = () => {
+    state.sourceSelection = {
+      start: elements.editor.selectionStart,
+      end: elements.editor.selectionEnd
+    }
+  }
+
+  const updateEditSurface = (focus = false) => {
+    const showSource = state.editSurface === 'source'
+    elements.sourcePanel.hidden = !showSource
+    elements.editPreviewPanel.hidden = showSource
+    elements.sourceTab.classList.toggle('is-active', showSource)
+    elements.previewTab.classList.toggle('is-active', !showSource)
+    elements.sourceTab.setAttribute('aria-selected', String(showSource))
+    elements.previewTab.setAttribute('aria-selected', String(!showSource))
+
+    if (showSource) {
+      if (focus) {
+        elements.editor.focus()
+        elements.editor.setSelectionRange(state.sourceSelection.start, state.sourceSelection.end)
+      }
+      return
+    }
+
+    renderInteractivePreview()
+    if (focus) elements.editPreview.querySelector('.is-selected, .mdw-preview-block')?.focus()
+  }
+
+  const setEditSurface = surface => {
+    if (!state.editing || !['source', 'preview'].includes(surface) || state.editSurface === surface) return
+    if (state.editSurface === 'source') rememberSourceSelection()
+    state.editSurface = surface
+    updateEditSurface(true)
+  }
+
+  const currentInsertionRange = () => {
+    if (state.editSurface === 'preview') {
+      const offset = state.previewSelection?.end ?? elements.editor.value.length
+      return { start: offset, end: offset }
+    }
+    return { ...state.sourceSelection }
+  }
+
+  const replaceEditorSelection = (replacement, options = {}, range = currentInsertionRange()) => {
+    const edit = applyTextEdit(elements.editor.value, range.start, range.end, replacement, options)
+    elements.editor.value = edit.value
+    state.sourceSelection = { start: edit.selectionStart, end: edit.selectionEnd }
+    state.previewSelection = null
+
+    if (state.editSurface === 'source') {
+      elements.editor.focus()
+      elements.editor.setSelectionRange(edit.selectionStart, edit.selectionEnd)
+    } else {
+      renderInteractivePreview()
+      elements.previewSelection.textContent = '组件已插入。点击内容块可继续选择插入位置；双击可回到源码精确调整。'
+    }
+  }
+
+  const applyMarkdownCommand = command => {
+    const range = currentInsertionRange()
+    const selected = elements.editor.value.slice(range.start, range.end)
+    const lineCommand = (prefix, placeholder) => {
+      const value = selected || placeholder
+      const replacement = value.split('\n').map((line, index) => `${typeof prefix === 'function' ? prefix(index) : prefix}${line}`).join('\n')
+      replaceEditorSelection(replacement, { block: state.editSurface === 'preview' }, range)
+    }
+
+    if (command === 'heading') return replaceEditorSelection('## {{selection}}', { block: true, placeholder: '小标题', select: '小标题' }, range)
+    if (command === 'bold') return replaceEditorSelection('**{{selection}}**', { placeholder: '加粗文字', select: '加粗文字' }, range)
+    if (command === 'italic') return replaceEditorSelection('*{{selection}}*', { placeholder: '斜体文字', select: '斜体文字' }, range)
+    if (command === 'unordered') return lineCommand('- ', '列表项')
+    if (command === 'ordered') return lineCommand(index => `${index + 1}. `, '列表项')
+    if (command === 'quote') return lineCommand('> ', '引用内容')
+    if (command === 'link') return replaceEditorSelection('[{{selection}}](https://example.com)', { placeholder: '链接文字', select: 'https://example.com' }, range)
+    if (command === 'code') {
+      const isBlock = selected.includes('\n') || state.editSurface === 'preview'
+      return replaceEditorSelection(isBlock ? '```text\n{{selection}}\n```' : '`{{selection}}`', {
+        block: isBlock,
+        placeholder: isBlock ? '代码内容' : '行内代码',
+        select: isBlock ? '代码内容' : '行内代码'
+      }, range)
+    }
+  }
+
+  const insertButterflyComponent = componentId => {
+    const component = BUTTERFLY_COMPONENTS.find(item => item.id === componentId)
+    if (!component) return
+    replaceEditorSelection(component.snippet, {
+      block: !component.inline || state.editSurface === 'preview',
+      placeholder: component.placeholder,
+      select: component.select
+    })
+  }
+
+  const renderComponentTools = () => {
+    elements.componentTools.replaceChildren()
+    BUTTERFLY_COMPONENTS.forEach(component => {
+      const button = document.createElement('button')
+      button.type = 'button'
+      button.className = 'mdw-tool-button'
+      button.dataset.component = component.id
+      button.title = component.description
+      button.textContent = component.label
+      elements.componentTools.append(button)
+    })
   }
 
   const getActiveDocument = () => state.documents.find(doc => doc.id === state.activeId) || null
@@ -458,6 +706,8 @@
     if (requestedDocument) state.activeId = requestedDocument.id
     else if (!state.documents.some(doc => doc.id === state.activeId)) state.activeId = state.documents[0]?.id || null
     state.editing = false
+    state.editSurface = 'source'
+    state.previewSelection = null
     state.originalContent = ''
     persistDocuments()
     render()
@@ -660,7 +910,11 @@
     document.title = `${doc.title} | Markdown 工作台`
     elements.documentTitle.textContent = doc.title
     elements.documentMeta.textContent = `${doc.fileName} · 更新于 ${formatDate(doc.updatedAt)} · ${doc.remotePath ? '已发布' : '本地草稿'}`
-    if (!state.editing) elements.preview.innerHTML = renderMarkdown(doc.content)
+    if (!state.editing) {
+      elements.preview.innerHTML = renderMarkdown(stripManagedDocumentChrome(doc.content))
+    } else {
+      updateEditSurface()
+    }
   }
 
   const render = () => {
@@ -675,6 +929,8 @@
 
     state.activeId = id
     state.editing = false
+    state.editSurface = 'source'
+    state.previewSelection = null
     state.originalContent = ''
     updatePageUrl(id, options.replace ? 'replaceState' : 'pushState')
     render()
@@ -683,18 +939,24 @@
   const enterEditMode = () => {
     const doc = getActiveDocument()
     if (!doc) return
+    const editableContent = normalizeMarkdownStructure(stripManagedDocumentChrome(doc.content))
     state.editing = true
-    state.originalContent = doc.content
-    elements.editor.value = doc.content
+    state.editSurface = 'source'
+    state.previewSelection = null
+    state.originalContent = editableContent
+    elements.editor.value = editableContent
+    state.sourceSelection = { start: editableContent.length, end: editableContent.length }
     render()
     elements.editor.focus()
+    elements.editor.setSelectionRange(editableContent.length, editableContent.length)
   }
 
   const applyEditorContent = () => {
     const doc = getActiveDocument()
     if (!doc) return null
 
-    const content = normalizeContent(elements.editor.value)
+    const content = normalizeMarkdownStructure(elements.editor.value)
+    elements.editor.value = content
     doc.content = content
     doc.title = deriveTitle(content, doc.fileName)
     doc.updatedAt = Date.now()
@@ -709,6 +971,8 @@
     try {
       persistDocuments()
       state.editing = false
+      state.editSurface = 'source'
+      state.previewSelection = null
       state.originalContent = ''
       render()
       if (!options.silent) announce('草稿已保存，当前浏览器中的预览已更新。')
@@ -723,6 +987,8 @@
   const cancelEdit = () => {
     if (!confirmDiscard()) return
     state.editing = false
+    state.editSurface = 'source'
+    state.previewSelection = null
     state.originalContent = ''
     render()
   }
@@ -813,6 +1079,49 @@
       .catch(error => announce(`同步失败：${error.message}`, 'error'))
   })
   elements.disconnectButton.addEventListener('click', disconnectGithub)
+  elements.sourceTab.addEventListener('click', () => {
+    if (state.editSurface === 'source') elements.editor.focus()
+    else setEditSurface('source')
+  })
+  elements.previewTab.addEventListener('click', () => {
+    if (state.editSurface === 'preview') renderInteractivePreview()
+    else setEditSurface('preview')
+  })
+  root.addEventListener('click', event => {
+    const markdownButton = event.target.closest('[data-md-command]')
+    if (markdownButton) applyMarkdownCommand(markdownButton.dataset.mdCommand)
+    const componentButton = event.target.closest('[data-component]')
+    if (componentButton) insertButterflyComponent(componentButton.dataset.component)
+  })
+  const selectPreviewBlock = block => {
+    if (!block) return
+    elements.editPreview.querySelectorAll('.mdw-preview-block.is-selected').forEach(item => item.classList.remove('is-selected'))
+    block.classList.add('is-selected')
+    state.previewSelection = {
+      start: Number(block.dataset.mdStart),
+      end: Number(block.dataset.mdEnd)
+    }
+    elements.previewSelection.textContent = '已选择此内容块；使用上方工具会插入到它后面。双击可在源码中精确编辑。'
+  }
+  elements.editPreview.addEventListener('click', event => selectPreviewBlock(event.target.closest('.mdw-preview-block')))
+  elements.editPreview.addEventListener('keydown', event => {
+    if (!['Enter', ' '].includes(event.key)) return
+    event.preventDefault()
+    selectPreviewBlock(event.target.closest('.mdw-preview-block'))
+  })
+  elements.editPreview.addEventListener('dblclick', event => {
+    const block = event.target.closest('.mdw-preview-block')
+    if (!block) return
+    state.sourceSelection = {
+      start: Number(block.dataset.mdStart),
+      end: Number(block.dataset.mdEnd)
+    }
+    state.editSurface = 'source'
+    updateEditSurface(true)
+  })
+  ;['select', 'keyup', 'click', 'input'].forEach(eventName => {
+    elements.editor.addEventListener(eventName, rememberSourceSelection)
+  })
   elements.editor.addEventListener('keydown', event => {
     if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 's') {
       event.preventDefault()
@@ -827,6 +1136,8 @@
     const requestedId = new URL(window.location.href).searchParams.get('doc')
     state.activeId = state.documents.some(doc => doc.id === requestedId) ? requestedId : null
     state.editing = false
+    state.editSurface = 'source'
+    state.previewSelection = null
     render()
   })
   window.addEventListener('beforeunload', event => {
@@ -836,6 +1147,7 @@
   })
 
   state.documents = loadDocuments()
+  renderComponentTools()
   const repositorySettings = loadRepositorySettings()
   elements.owner.value = repositorySettings.owner
   elements.repo.value = repositorySettings.repo

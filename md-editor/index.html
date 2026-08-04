@@ -286,9 +286,44 @@
             <button id="mdw-cancel-button" class="mdw-button mdw-button-secondary" type="button">取消修改</button>
           </div>
         </header>
-        <label class="mdw-editor-label" for="mdw-editor">Markdown 内容</label>
-        <textarea id="mdw-editor" class="mdw-editor" spellcheck="false"></textarea>
-        <p class="mdw-editor-help">支持标题、列表、引用、代码块、表格、链接和图片等常用 Markdown 语法。快捷键：⌘/Ctrl + S。</p>
+        <div class="mdw-workbench-toolbar">
+          <div class="mdw-mode-switch" role="tablist" aria-label="编辑视图">
+            <button id="mdw-source-tab" class="mdw-mode-button is-active" type="button" role="tab" aria-selected="true" aria-controls="mdw-source-panel">
+              <i class="fas fa-code" aria-hidden="true"></i> 源码
+            </button>
+            <button id="mdw-preview-tab" class="mdw-mode-button" type="button" role="tab" aria-selected="false" aria-controls="mdw-edit-preview-panel">
+              <i class="far fa-eye" aria-hidden="true"></i> 可视化预览
+            </button>
+          </div>
+
+          <div class="mdw-tool-row" aria-label="Markdown 快捷工具">
+            <strong>Markdown</strong>
+            <button class="mdw-tool-button" type="button" data-md-command="heading" title="二级标题">标题</button>
+            <button class="mdw-tool-button" type="button" data-md-command="bold" title="加粗"><strong>B</strong></button>
+            <button class="mdw-tool-button" type="button" data-md-command="italic" title="斜体"><em>I</em></button>
+            <button class="mdw-tool-button" type="button" data-md-command="unordered" title="无序列表">列表</button>
+            <button class="mdw-tool-button" type="button" data-md-command="ordered" title="有序列表">编号</button>
+            <button class="mdw-tool-button" type="button" data-md-command="quote" title="引用">引用</button>
+            <button class="mdw-tool-button" type="button" data-md-command="code" title="行内代码或代码块">代码</button>
+            <button class="mdw-tool-button" type="button" data-md-command="link" title="链接">链接</button>
+          </div>
+
+          <div class="mdw-tool-row" aria-label="Butterfly 主题组件">
+            <strong>Butterfly</strong>
+            <div id="mdw-component-tools" class="mdw-component-tools"></div>
+          </div>
+        </div>
+
+        <div id="mdw-source-panel" role="tabpanel" aria-labelledby="mdw-source-tab">
+          <label class="mdw-editor-label" for="mdw-editor">Markdown 源码</label>
+          <textarea id="mdw-editor" class="mdw-editor" spellcheck="false"></textarea>
+          <p class="mdw-editor-help">工具会在当前选区插入语法；先选中文字可直接套用格式。快捷键：⌘/Ctrl + S。</p>
+        </div>
+
+        <div id="mdw-edit-preview-panel" class="mdw-edit-preview-panel" role="tabpanel" aria-labelledby="mdw-preview-tab" hidden>
+          <p id="mdw-preview-selection" class="mdw-preview-selection">点击任意内容块选择插入位置；双击内容块可回到源码并选中对应内容。</p>
+          <article id="mdw-edit-preview" class="mdw-preview mdw-interactive-preview"></article>
+        </div>
       </div>
     </section>
   </div>

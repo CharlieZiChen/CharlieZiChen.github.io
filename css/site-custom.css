@@ -176,6 +176,22 @@
   display: none;
 }
 
+#article-container:has(.managed-page-version) {
+  --hl-bg: color-mix(in srgb, var(--theme-color, #49b1f5) 7%, var(--card-bg, #fff));
+  --hl-color: var(--font-color, #4c4948);
+  --hltools-bg: color-mix(in srgb, var(--theme-color, #49b1f5) 13%, var(--card-bg, #fff));
+  --hltools-color: color-mix(in srgb, var(--font-color, #4c4948) 72%, transparent);
+  --hlnumber-bg: var(--hl-bg);
+  --hlnumber-color: color-mix(in srgb, var(--font-color, #4c4948) 48%, transparent);
+  --hlscrollbar-bg: color-mix(in srgb, var(--theme-color, #49b1f5) 28%, transparent);
+}
+
+#article-container:has(.managed-page-version) figure.highlight {
+  border: 1px solid color-mix(in srgb, var(--theme-color, #49b1f5) 22%, transparent);
+  border-radius: 12px;
+  box-shadow: none;
+}
+
 .managed-page-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
