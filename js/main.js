@@ -625,6 +625,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const target = e.target.closest('.site-page.group')
       if (!target) return
       target.classList.toggle('hide')
+      target.setAttribute('aria-expanded', String(!target.classList.contains('hide')))
     }
 
     document.querySelector('#sidebar-menus .menus_items').addEventListener('click', handleClickOfSubMenu)

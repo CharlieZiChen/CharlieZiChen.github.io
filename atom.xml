@@ -1,0 +1,443 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Le Website de CharlieZC</title>
+  
+  <subtitle>GGST,DDUP!</subtitle>
+  <link href="https://charliezichen.github.io/atom.xml" rel="self"/>
+  
+  <link href="https://charliezichen.github.io/"/>
+  <updated>2024-11-13T11:48:30.000Z</updated>
+  <id>https://charliezichen.github.io/</id>
+  
+  <author>
+    <name>CharlieZC</name>
+    
+  </author>
+  
+  <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>积分、级数与傅立叶变换</title>
+    <link href="https://charliezichen.github.io/2024/11/13/%E7%A7%AF%E5%88%86%E3%80%81%E6%9E%81%E6%95%B0%E4%B8%8E%E5%82%85%E7%AB%8B%E5%8F%B6%E5%8F%98%E6%8D%A2/"/>
+    <id>https://charliezichen.github.io/2024/11/13/%E7%A7%AF%E5%88%86%E3%80%81%E6%9E%81%E6%95%B0%E4%B8%8E%E5%82%85%E7%AB%8B%E5%8F%B6%E5%8F%98%E6%8D%A2/</id>
+    <published>2024-11-13T11:48:30.000Z</published>
+    <updated>2024-11-13T11:48:30.000Z</updated>
+    
+    
+    <summary type="html">积分、级数与傅里叶变换相关知识点和公式整理。</summary>
+    
+    
+    
+    <category term="学习笔记" scheme="https://charliezichen.github.io/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+    
+    
+    <category term="数学" scheme="https://charliezichen.github.io/tags/%E6%95%B0%E5%AD%A6/"/>
+    
+    <category term="傅里叶变换" scheme="https://charliezichen.github.io/tags/%E5%82%85%E9%87%8C%E5%8F%B6%E5%8F%98%E6%8D%A2/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>大三上C复习</title>
+    <link href="https://charliezichen.github.io/2024/11/05/%E5%A4%A7%E4%B8%89%E4%B8%8AC%E5%A4%8D%E4%B9%A0/"/>
+    <id>https://charliezichen.github.io/2024/11/05/%E5%A4%A7%E4%B8%89%E4%B8%8AC%E5%A4%8D%E4%B9%A0/</id>
+    <published>2024-11-05T13:59:51.000Z</published>
+    <updated>2024-11-05T13:59:51.000Z</updated>
+    
+    
+    <summary type="html">大三上学期 C 语言知识点与复习内容整理。</summary>
+    
+    
+    
+    <category term="学习笔记" scheme="https://charliezichen.github.io/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+    
+    
+    <category term="编程" scheme="https://charliezichen.github.io/tags/%E7%BC%96%E7%A8%8B/"/>
+    
+    <category term="C" scheme="https://charliezichen.github.io/tags/C/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>电磁学基础 Chapitre1</title>
+    <link href="https://charliezichen.github.io/2024/09/30/%E7%94%B5%E7%A3%81%E5%AD%A6%E5%9F%BA%E7%A1%80-Chapitre1/"/>
+    <id>https://charliezichen.github.io/2024/09/30/%E7%94%B5%E7%A3%81%E5%AD%A6%E5%9F%BA%E7%A1%80-Chapitre1/</id>
+    <published>2024-09-30T00:27:31.000Z</published>
+    <updated>2024-09-30T00:27:31.000Z</updated>
+    
+    
+    <summary type="html">电磁学基础第一章的概念、公式与例题整理。</summary>
+    
+    
+    
+    <category term="学习笔记" scheme="https://charliezichen.github.io/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+    
+    
+    <category term="物理" scheme="https://charliezichen.github.io/tags/%E7%89%A9%E7%90%86/"/>
+    
+    <category term="电磁学" scheme="https://charliezichen.github.io/tags/%E7%94%B5%E7%A3%81%E5%AD%A6/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>python通过WebAPI实现在unity中接入MySQL数据库</title>
+    <link href="https://charliezichen.github.io/2024/08/17/python%E9%80%9A%E8%BF%87WebAPI%E5%AE%9E%E7%8E%B0%E5%9C%A8unity%E4%B8%AD%E6%8E%A5%E5%85%A5MySQL%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    <id>https://charliezichen.github.io/2024/08/17/python%E9%80%9A%E8%BF%87WebAPI%E5%AE%9E%E7%8E%B0%E5%9C%A8unity%E4%B8%AD%E6%8E%A5%E5%85%A5MySQL%E6%95%B0%E6%8D%AE%E5%BA%93/</id>
+    <published>2024-08-17T04:08:28.000Z</published>
+    <updated>2024-08-17T04:08:28.000Z</updated>
+    
+    
+    <summary type="html">使用 Python Web API 在 Unity 项目中安全访问 MySQL 数据库的实现记录。</summary>
+    
+    
+    
+    <category term="开发实践" scheme="https://charliezichen.github.io/categories/%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5/"/>
+    
+    
+    <category term="Unity" scheme="https://charliezichen.github.io/tags/Unity/"/>
+    
+    <category term="Python" scheme="https://charliezichen.github.io/tags/Python/"/>
+    
+    <category term="MySQL" scheme="https://charliezichen.github.io/tags/MySQL/"/>
+    
+    <category term="WebAPI" scheme="https://charliezichen.github.io/tags/WebAPI/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>综合法语词汇</title>
+    <link href="https://charliezichen.github.io/2024/04/09/%E7%BB%BC%E5%90%88%E6%B3%95%E8%AF%AD%E8%AF%8D%E6%B1%87/"/>
+    <id>https://charliezichen.github.io/2024/04/09/%E7%BB%BC%E5%90%88%E6%B3%95%E8%AF%AD%E8%AF%8D%E6%B1%87/</id>
+    <published>2024-04-09T12:04:30.000Z</published>
+    <updated>2024-04-09T12:04:30.000Z</updated>
+    
+    
+    <summary type="html">综合法语课程词汇、短语与常用表达整理。</summary>
+    
+    
+    
+    <category term="法语学习" scheme="https://charliezichen.github.io/categories/%E6%B3%95%E8%AF%AD%E5%AD%A6%E4%B9%A0/"/>
+    
+    
+    <category term="法语" scheme="https://charliezichen.github.io/tags/%E6%B3%95%E8%AF%AD/"/>
+    
+    <category term="词汇" scheme="https://charliezichen.github.io/tags/%E8%AF%8D%E6%B1%87/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>中级法汉互译</title>
+    <link href="https://charliezichen.github.io/2024/03/11/%E4%B8%AD%E7%BA%A7%E6%B3%95%E6%B1%89%E4%BA%92%E8%AF%91/"/>
+    <id>https://charliezichen.github.io/2024/03/11/%E4%B8%AD%E7%BA%A7%E6%B3%95%E6%B1%89%E4%BA%92%E8%AF%91/</id>
+    <published>2024-03-11T08:15:38.000Z</published>
+    <updated>2024-03-11T08:15:38.000Z</updated>
+    
+    
+    <summary type="html">中级法汉互译练习与表达整理。</summary>
+    
+    
+    
+    <category term="法语学习" scheme="https://charliezichen.github.io/categories/%E6%B3%95%E8%AF%AD%E5%AD%A6%E4%B9%A0/"/>
+    
+    
+    <category term="法语" scheme="https://charliezichen.github.io/tags/%E6%B3%95%E8%AF%AD/"/>
+    
+    <category term="翻译" scheme="https://charliezichen.github.io/tags/%E7%BF%BB%E8%AF%91/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>化学反应课本</title>
+    <link href="https://charliezichen.github.io/2024/02/27/%E5%8C%96%E5%AD%A6%E5%8F%8D%E5%BA%94%E8%AF%BE%E6%9C%AC/"/>
+    <id>https://charliezichen.github.io/2024/02/27/%E5%8C%96%E5%AD%A6%E5%8F%8D%E5%BA%94%E8%AF%BE%E6%9C%AC/</id>
+    <published>2024-02-27T11:52:03.000Z</published>
+    <updated>2024-02-27T11:52:03.000Z</updated>
+    
+    
+    <summary type="html">化学反应课程内容、公式与例题整理。</summary>
+    
+    
+    
+    <category term="学习笔记" scheme="https://charliezichen.github.io/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+    
+    
+    <category term="化学" scheme="https://charliezichen.github.io/tags/%E5%8C%96%E5%AD%A6/"/>
+    
+    <category term="化学反应" scheme="https://charliezichen.github.io/tags/%E5%8C%96%E5%AD%A6%E5%8F%8D%E5%BA%94/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>波动光学</title>
+    <link href="https://charliezichen.github.io/2024/02/20/%E6%B3%A2%E5%8A%A8%E5%85%89%E5%AD%A6/"/>
+    <id>https://charliezichen.github.io/2024/02/20/%E6%B3%A2%E5%8A%A8%E5%85%89%E5%AD%A6/</id>
+    <published>2024-02-20T11:21:52.000Z</published>
+    <updated>2024-02-20T11:21:52.000Z</updated>
+    
+    
+    <summary type="html">波动光学课程中的干涉、衍射与相关公式整理。</summary>
+    
+    
+    
+    <category term="学习笔记" scheme="https://charliezichen.github.io/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+    
+    
+    <category term="物理" scheme="https://charliezichen.github.io/tags/%E7%89%A9%E7%90%86/"/>
+    
+    <category term="光学" scheme="https://charliezichen.github.io/tags/%E5%85%89%E5%AD%A6/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>晶体课本（中文版）</title>
+    <link href="https://charliezichen.github.io/2023/12/30/%E6%99%B6%E4%BD%93%E8%AF%BE%E6%9C%AC%EF%BC%88%E4%B8%AD%E6%96%87%E7%89%88%EF%BC%89/"/>
+    <id>https://charliezichen.github.io/2023/12/30/%E6%99%B6%E4%BD%93%E8%AF%BE%E6%9C%AC%EF%BC%88%E4%B8%AD%E6%96%87%E7%89%88%EF%BC%89/</id>
+    <published>2023-12-30T07:58:46.000Z</published>
+    <updated>2023-12-30T07:58:46.000Z</updated>
+    
+    
+    <summary type="html">晶体结构与分子间相互作用的中文学习笔记。</summary>
+    
+    
+    
+    <category term="学习笔记" scheme="https://charliezichen.github.io/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+    
+    
+    <category term="物理" scheme="https://charliezichen.github.io/tags/%E7%89%A9%E7%90%86/"/>
+    
+    <category term="晶体" scheme="https://charliezichen.github.io/tags/%E6%99%B6%E4%BD%93/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>中文版热力学第四（第五部分）、五章</title>
+    <link href="https://charliezichen.github.io/2023/11/28/%E4%B8%AD%E6%96%87%E7%89%88%E7%83%AD%E5%8A%9B%E5%AD%A6%E7%AC%AC%E5%9B%9B%EF%BC%88%E7%AC%AC%E4%BA%94%E9%83%A8%E5%88%86%EF%BC%89%E3%80%81%E4%BA%94%E7%AB%A0/"/>
+    <id>https://charliezichen.github.io/2023/11/28/%E4%B8%AD%E6%96%87%E7%89%88%E7%83%AD%E5%8A%9B%E5%AD%A6%E7%AC%AC%E5%9B%9B%EF%BC%88%E7%AC%AC%E4%BA%94%E9%83%A8%E5%88%86%EF%BC%89%E3%80%81%E4%BA%94%E7%AB%A0/</id>
+    <published>2023-11-28T13:36:00.000Z</published>
+    <updated>2023-11-28T13:36:00.000Z</updated>
+    
+    
+    <summary type="html">热力学第四章第五部分及第五章的中文学习笔记。</summary>
+    
+    
+    
+    <category term="学习笔记" scheme="https://charliezichen.github.io/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+    
+    <category term="大二上" scheme="https://charliezichen.github.io/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E5%A4%A7%E4%BA%8C%E4%B8%8A/"/>
+    
+    <category term="中文版" scheme="https://charliezichen.github.io/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E5%A4%A7%E4%BA%8C%E4%B8%8A/%E4%B8%AD%E6%96%87%E7%89%88/"/>
+    
+    
+    <category term="热力学" scheme="https://charliezichen.github.io/tags/%E7%83%AD%E5%8A%9B%E5%AD%A6/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>中文版信号学第六章</title>
+    <link href="https://charliezichen.github.io/2023/11/27/%E4%B8%AD%E6%96%87%E7%89%88%E4%BF%A1%E5%8F%B7%E5%AD%A6%E7%AC%AC%E5%85%AD%E7%AB%A0/"/>
+    <id>https://charliezichen.github.io/2023/11/27/%E4%B8%AD%E6%96%87%E7%89%88%E4%BF%A1%E5%8F%B7%E5%AD%A6%E7%AC%AC%E5%85%AD%E7%AB%A0/</id>
+    <published>2023-11-27T13:36:04.000Z</published>
+    <updated>2023-11-27T13:36:04.000Z</updated>
+    
+    
+    <summary type="html">信号学第六章中文学习笔记与公式整理。</summary>
+    
+    
+    
+    <category term="学习笔记" scheme="https://charliezichen.github.io/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+    
+    <category term="大二上" scheme="https://charliezichen.github.io/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E5%A4%A7%E4%BA%8C%E4%B8%8A/"/>
+    
+    <category term="中文版" scheme="https://charliezichen.github.io/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E5%A4%A7%E4%BA%8C%E4%B8%8A/%E4%B8%AD%E6%96%87%E7%89%88/"/>
+    
+    
+    <category term="信号学" scheme="https://charliezichen.github.io/tags/%E4%BF%A1%E5%8F%B7%E5%AD%A6/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>C++学习之路(1)</title>
+    <link href="https://charliezichen.github.io/2023/11/19/C-%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF-1/"/>
+    <id>https://charliezichen.github.io/2023/11/19/C-%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF-1/</id>
+    <published>2023-11-19T05:01:35.000Z</published>
+    <updated>2023-11-19T05:01:35.000Z</updated>
+    
+    
+    <summary type="html">C++ 基础语法与编程概念的学习笔记。</summary>
+    
+    
+    
+    <category term="学习笔记" scheme="https://charliezichen.github.io/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+    
+    
+    <category term="C++" scheme="https://charliezichen.github.io/tags/C/"/>
+    
+    <category term="编程" scheme="https://charliezichen.github.io/tags/%E7%BC%96%E7%A8%8B/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>巴院课程资源共享库</title>
+    <link href="https://charliezichen.github.io/2023/11/13/%E5%B7%B4%E9%99%A2%E8%AF%BE%E7%A8%8B%E8%B5%84%E6%BA%90%E5%85%B1%E4%BA%AB%E5%BA%93/"/>
+    <id>https://charliezichen.github.io/2023/11/13/%E5%B7%B4%E9%99%A2%E8%AF%BE%E7%A8%8B%E8%B5%84%E6%BA%90%E5%85%B1%E4%BA%AB%E5%BA%93/</id>
+    <published>2023-11-13T11:38:22.000Z</published>
+    <updated>2023-11-13T11:38:22.000Z</updated>
+    
+    
+    <summary type="html">感谢学长学姐们的分享，本篇博客旨在让更多的巴院同学找到自己想要的资源。如果有愿意分享的同学可以联系我</summary>
+    
+    
+    
+    <category term="资源共享" scheme="https://charliezichen.github.io/categories/%E8%B5%84%E6%BA%90%E5%85%B1%E4%BA%AB/"/>
+    
+    
+    <category term="课程资源" scheme="https://charliezichen.github.io/tags/%E8%AF%BE%E7%A8%8B%E8%B5%84%E6%BA%90/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>信号学</title>
+    <link href="https://charliezichen.github.io/2023/11/06/%E4%BF%A1%E5%8F%B7%E5%AD%A6/"/>
+    <id>https://charliezichen.github.io/2023/11/06/%E4%BF%A1%E5%8F%B7%E5%AD%A6/</id>
+    <published>2023-11-06T02:57:42.000Z</published>
+    <updated>2023-11-06T02:57:42.000Z</updated>
+    
+    
+    <summary type="html">信号学课程 PDF 资料索引与章节整理。</summary>
+    
+    
+    
+    <category term="学习笔记" scheme="https://charliezichen.github.io/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+    
+    <category term="大二上" scheme="https://charliezichen.github.io/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E5%A4%A7%E4%BA%8C%E4%B8%8A/"/>
+    
+    
+    <category term="信号学" scheme="https://charliezichen.github.io/tags/%E4%BF%A1%E5%8F%B7%E5%AD%A6/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>热力学第四章</title>
+    <link href="https://charliezichen.github.io/2023/11/02/%E7%83%AD%E5%8A%9B%E5%AD%A6%E7%AC%AC%E5%9B%9B%E7%AB%A0/"/>
+    <id>https://charliezichen.github.io/2023/11/02/%E7%83%AD%E5%8A%9B%E5%AD%A6%E7%AC%AC%E5%9B%9B%E7%AB%A0/</id>
+    <published>2023-11-02T04:56:37.000Z</published>
+    <updated>2023-11-02T04:56:37.000Z</updated>
+    
+    
+    <summary type="html">热力学第四章关于熵、第二定律与热力学过程的学习笔记。</summary>
+    
+    
+    
+    <category term="学习笔记" scheme="https://charliezichen.github.io/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+    
+    
+    <category term="物理" scheme="https://charliezichen.github.io/tags/%E7%89%A9%E7%90%86/"/>
+    
+    <category term="大二上" scheme="https://charliezichen.github.io/tags/%E5%A4%A7%E4%BA%8C%E4%B8%8A/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>线性代数题型总结</title>
+    <link href="https://charliezichen.github.io/2023/10/31/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E9%A2%98%E5%9E%8B%E6%80%BB%E7%BB%93/"/>
+    <id>https://charliezichen.github.io/2023/10/31/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E9%A2%98%E5%9E%8B%E6%80%BB%E7%BB%93/</id>
+    <published>2023-10-31T10:32:29.000Z</published>
+    <updated>2023-10-31T10:32:29.000Z</updated>
+    
+    
+    <summary type="html">线性代数常见题型、解题方法与公式总结。</summary>
+    
+    
+    
+    <category term="学习笔记" scheme="https://charliezichen.github.io/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+    
+    
+    <category term="大二上" scheme="https://charliezichen.github.io/tags/%E5%A4%A7%E4%BA%8C%E4%B8%8A/"/>
+    
+    <category term="数学" scheme="https://charliezichen.github.io/tags/%E6%95%B0%E5%AD%A6/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>物理热力学第三章</title>
+    <link href="https://charliezichen.github.io/2023/10/29/%E7%89%A9%E7%90%86%E7%83%AD%E5%8A%9B%E5%AD%A6%E7%AC%AC%E4%B8%89%E7%AB%A0/"/>
+    <id>https://charliezichen.github.io/2023/10/29/%E7%89%A9%E7%90%86%E7%83%AD%E5%8A%9B%E5%AD%A6%E7%AC%AC%E4%B8%89%E7%AB%A0/</id>
+    <published>2023-10-29T05:21:14.000Z</published>
+    <updated>2023-10-29T05:21:14.000Z</updated>
+    
+    
+    <summary type="html">物理热力学第三章关于内能、热容与热力学第一定律的学习笔记。</summary>
+    
+    
+    
+    <category term="学习笔记" scheme="https://charliezichen.github.io/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+    
+    
+    <category term="物理" scheme="https://charliezichen.github.io/tags/%E7%89%A9%E7%90%86/"/>
+    
+    <category term="大二上" scheme="https://charliezichen.github.io/tags/%E5%A4%A7%E4%BA%8C%E4%B8%8A/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Unity hololens2开发(一):准备工作与项目部署</title>
+    <link href="https://charliezichen.github.io/2023/10/28/Unity-hololens2%E5%BC%80%E5%8F%91-%E4%B8%80-%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C%E4%B8%8E%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2/"/>
+    <id>https://charliezichen.github.io/2023/10/28/Unity-hololens2%E5%BC%80%E5%8F%91-%E4%B8%80-%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C%E4%B8%8E%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2/</id>
+    <published>2023-10-28T15:43:30.000Z</published>
+    <updated>2023-10-28T15:43:30.000Z</updated>
+    
+    
+    <summary type="html">Unity HoloLens 2 开发环境准备、项目配置与部署流程记录。</summary>
+    
+    
+    
+    <category term="hololens2 开发" scheme="https://charliezichen.github.io/categories/hololens2-%E5%BC%80%E5%8F%91/"/>
+    
+    
+    <category term="Unity" scheme="https://charliezichen.github.io/tags/Unity/"/>
+    
+    <category term="hololens2" scheme="https://charliezichen.github.io/tags/hololens2/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Unity play模式下正常,打包时报错:Cannot build player while editor is importing assets or compiling scripts</title>
+    <link href="https://charliezichen.github.io/2023/10/28/Unity-play%E6%A8%A1%E5%BC%8F%E4%B8%8B%E6%AD%A3%E5%B8%B8-%E6%89%93%E5%8C%85%E6%97%B6%E6%8A%A5%E9%94%99-Cannot-build-player-while-editor-is-importing-assets-or-compiling-scripts/"/>
+    <id>https://charliezichen.github.io/2023/10/28/Unity-play%E6%A8%A1%E5%BC%8F%E4%B8%8B%E6%AD%A3%E5%B8%B8-%E6%89%93%E5%8C%85%E6%97%B6%E6%8A%A5%E9%94%99-Cannot-build-player-while-editor-is-importing-assets-or-compiling-scripts/</id>
+    <published>2023-10-28T08:50:35.000Z</published>
+    <updated>2023-10-28T08:50:35.000Z</updated>
+    
+    
+    <summary type="html">解决 Unity 打包时出现 Cannot build player while editor is importing assets or compiling scripts 的方法。</summary>
+    
+    
+    
+    <category term="hololens2 开发" scheme="https://charliezichen.github.io/categories/hololens2-%E5%BC%80%E5%8F%91/"/>
+    
+    
+    <category term="Unity" scheme="https://charliezichen.github.io/tags/Unity/"/>
+    
+    <category term="hololens2" scheme="https://charliezichen.github.io/tags/hololens2/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>现在用不到但未来可能用得到的网页小配置</title>
+    <link href="https://charliezichen.github.io/2023/10/27/%E7%8E%B0%E5%9C%A8%E7%94%A8%E4%B8%8D%E5%88%B0%E4%BD%86%E6%9C%AA%E6%9D%A5%E5%8F%AF%E8%83%BD%E7%94%A8%E5%BE%97%E5%88%B0%E7%9A%84%E7%BD%91%E9%A1%B5%E5%B0%8F%E9%85%8D%E7%BD%AE/"/>
+    <id>https://charliezichen.github.io/2023/10/27/%E7%8E%B0%E5%9C%A8%E7%94%A8%E4%B8%8D%E5%88%B0%E4%BD%86%E6%9C%AA%E6%9D%A5%E5%8F%AF%E8%83%BD%E7%94%A8%E5%BE%97%E5%88%B0%E7%9A%84%E7%BD%91%E9%A1%B5%E5%B0%8F%E9%85%8D%E7%BD%AE/</id>
+    <published>2023-10-27T11:28:03.000Z</published>
+    <updated>2023-10-27T11:28:03.000Z</updated>
+    
+    
+    <summary type="html">在本篇博客里实现一些暂时用不到的功能，方便以后使用</summary>
+    
+    
+    
+    <category term="小配置" scheme="https://charliezichen.github.io/categories/%E5%B0%8F%E9%85%8D%E7%BD%AE/"/>
+    
+    
+    <category term="网页配置" scheme="https://charliezichen.github.io/tags/%E7%BD%91%E9%A1%B5%E9%85%8D%E7%BD%AE/"/>
+    
+  </entry>
+  
+</feed>

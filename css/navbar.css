@@ -32,6 +32,9 @@
     align-items: center;
 }
 @media screen and (max-width: 768px) {
+    #blog-info .site-name {
+        display: none;
+    }
     #blog-info a:hover {
         background: 0;
         transition: unset;
@@ -285,7 +288,6 @@
     }
 }
 /* IPAD菜单栏调整 */
-
 
 
 

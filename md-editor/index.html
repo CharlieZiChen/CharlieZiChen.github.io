@@ -1,0 +1,377 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Markdown 工作台 | Le Website de CharlieZC</title><meta name="author" content="CharlieZC"><meta name="copyright" content="CharlieZC"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="在浏览器中导入、预览、编辑并发布 Markdown 页面">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Markdown 工作台">
+<meta property="og:url" content="https://charliezichen.github.io/md-editor/">
+<meta property="og:site_name" content="Le Website de CharlieZC">
+<meta property="og:description" content="在浏览器中导入、预览、编辑并发布 Markdown 页面">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://charliezichen.github.io/img/avatar.webp">
+<meta property="article:published_time" content="2026-08-02T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-08-02T16:00:00.000Z">
+<meta property="article:author" content="CharlieZC">
+<meta property="article:tag" content="CharlieZC, 学习笔记, Unity, HoloLens 2, 数学, 物理, 法语">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://charliezichen.github.io/img/avatar.webp"><link rel="shortcut icon" href="/img/logo.webp"><link rel="canonical" href="https://charliezichen.github.io/md-editor/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: {"limitDay":365,"position":"top","messagePrev":"本文距上次更新已过去","messageNext":"天，部分内容可能已经过时。"},
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":200},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":200,"languages":{"author":"作者: CharlieZC","link":"链接: ","source":"来源: Le Website de CharlieZC","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'mediumZoom',
+  Snackbar: {"chs_to_cht":"你已切换为繁体中文","cht_to_chs":"你已切换为简体中文","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Markdown 工作台',
+  isPost: false,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: false,
+  postUpdate: '2026-08-03 00:00:00'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+          const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+          const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+          const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+          if (t === undefined) {
+            if (isLightMode) activateLightMode()
+            else if (isDarkMode) activateDarkMode()
+            else if (isNotSpecified || hasNoSupport) {
+              const now = new Date()
+              const hour = now.getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            window.matchMedia('(prefers-color-scheme: dark)').addListener(e => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else if (t === 'light') activateLightMode()
+          else activateDarkMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/site-custom.css"><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="Le Website de CharlieZC" type="application/atom+xml">
+</head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.webp" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">22</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">25</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">8</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="icat_menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><button class="site-page group" type="button" aria-haspopup="true" aria-expanded="false"><i class="fa-fw fas fa-file-text"></i><span> 文章</span><i class="fas fa-chevron-down"></i></button><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间线</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li></ul></div><div class="menus_item"><button class="site-page group" type="button" aria-haspopup="true" aria-expanded="false"><i class="fa-fw fas fa-sitemap"></i><span> 本站</span><i class="fas fa-chevron-down"></i></button><ul class="menus_item_child"><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></li><li><a class="site-page child" href="/pages/"><i class="fa-fw fas fa-file-alt"></i><span> 共享页面</span></a></li></ul></div><div class="menus_item"><button class="site-page group" type="button" aria-haspopup="true" aria-expanded="false"><i class="fa-fw fas fa-id-card"></i><span> 我的</span><i class="fas fa-chevron-down"></i></button><ul class="menus_item_child"><li><a class="site-page child" href="/about/"><i class="fa-fw fas fa-info-circle"></i><span> 关于我</span></a></li><li><a class="site-page child" href="/%E5%AE%B6%E4%BA%BA/"><i class="fa-fw fas fa-home"></i><span> 家人</span></a></li></ul></div><div class="menus_item"><button class="site-page group" type="button" aria-haspopup="true" aria-expanded="false"><i class="fa-fw fas fa fa-spinner fa-spin"></i><span> 工具</span><i class="fas fa-chevron-down"></i></button><ul class="menus_item_child"><li><a class="site-page child" href="/%E7%94%B5%E5%AD%90%E6%9C%A8%E9%B1%BC/"><i class="fa-fw fas fa-map-pin"></i><span> 电子木鱼</span></a></li><li><a class="site-page child" href="/%E5%AE%9E%E7%94%A8%E7%BD%91%E7%AB%99/"><i class="fa-fw fas fa-paperclip"></i><span> 实用网站推荐</span></a></li><li><a class="site-page child" href="/md-editor/"><i class="fa-fw fas fa-file-alt"></i><span> Markdown 工作台</span></a></li></ul></div></div></div></div><div class="page" id="body-wrap"><header class="not-top-img nav-fixed fixed" id="page-header"><nav id="nav"><div id="nav-group"><span id="blog-info"><a href="/" title="Le Website de CharlieZC"><img class="site-icon" src="/img/logo.webp"/><span class="site-name">Le Website de CharlieZC</span></a></span><div id="menus"><div class="menus_items"><div class="icat_menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><button class="site-page group" type="button" aria-haspopup="true" aria-expanded="false"><i class="fa-fw fas fa-file-text"></i><span> 文章</span><i class="fas fa-chevron-down"></i></button><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间线</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li></ul></div><div class="menus_item"><button class="site-page group" type="button" aria-haspopup="true" aria-expanded="false"><i class="fa-fw fas fa-sitemap"></i><span> 本站</span><i class="fas fa-chevron-down"></i></button><ul class="menus_item_child"><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></li><li><a class="site-page child" href="/pages/"><i class="fa-fw fas fa-file-alt"></i><span> 共享页面</span></a></li></ul></div><div class="menus_item"><button class="site-page group" type="button" aria-haspopup="true" aria-expanded="false"><i class="fa-fw fas fa-id-card"></i><span> 我的</span><i class="fas fa-chevron-down"></i></button><ul class="menus_item_child"><li><a class="site-page child" href="/about/"><i class="fa-fw fas fa-info-circle"></i><span> 关于我</span></a></li><li><a class="site-page child" href="/%E5%AE%B6%E4%BA%BA/"><i class="fa-fw fas fa-home"></i><span> 家人</span></a></li></ul></div><div class="menus_item"><button class="site-page group" type="button" aria-haspopup="true" aria-expanded="false"><i class="fa-fw fas fa fa-spinner fa-spin"></i><span> 工具</span><i class="fas fa-chevron-down"></i></button><ul class="menus_item_child"><li><a class="site-page child" href="/%E7%94%B5%E5%AD%90%E6%9C%A8%E9%B1%BC/"><i class="fa-fw fas fa-map-pin"></i><span> 电子木鱼</span></a></li><li><a class="site-page child" href="/%E5%AE%9E%E7%94%A8%E7%BD%91%E7%AB%99/"><i class="fa-fw fas fa-paperclip"></i><span> 实用网站推荐</span></a></li><li><a class="site-page child" href="/md-editor/"><i class="fa-fw fas fa-file-alt"></i><span> Markdown 工作台</span></a></li></ul></div></div></div><div id="nav-right"><div id="search-button"><button class="site-page social-icon search" type="button" aria-label="搜索" title="搜索"><i class="fas fa-search fa-fw"></i></button></div><div id="toggle-menu"><button class="site-page" type="button" aria-label="打开菜单" title="打开菜单"><i class="fas fa-bars fa-fw"></i></button></div></div></div></nav></header><main class="layout hide-aside" id="content-inner"><div id="page"><h1 class="page-title">Markdown 工作台</h1><div id="article-container">
+<link rel="stylesheet" href="/md-editor/editor.css">
+
+<div id="md-workbench" class="mdw-shell"
+  data-storage-key="charliezc.md-pages.v1"
+  data-default-owner="CharlieZiChen"
+  data-default-repo="CharlieZiChen-blog-source"
+  data-default-branch="main"
+  data-base-path="source/pages"
+  data-site-url="https://charliezichen.github.io">
+  <section class="mdw-intro" aria-labelledby="mdw-intro-title">
+    <div>
+      <h2 id="mdw-intro-title">从 Markdown 开始一份页面</h2>
+      <p>选择一个或多个 <code>.md</code> 文件，导入后即可预览、编辑，并发布为共享页面。</p>
+    </div>
+    <div class="mdw-upload-area">
+      <input id="mdw-file-input" class="mdw-visually-hidden" type="file" accept=".md,text/markdown,text/plain" multiple>
+      <label class="mdw-button mdw-button-primary" for="mdw-file-input">
+        <i class="fas fa-upload" aria-hidden="true"></i>
+        选择 Markdown 文件
+      </label>
+      <span class="mdw-limit">单个文件不超过 2 MiB</span>
+    </div>
+  </section>
+
+  <section class="mdw-connection" aria-labelledby="mdw-connection-title">
+    <div class="mdw-connection-copy">
+      <h2 id="mdw-connection-title"><i class="fab fa-github" aria-hidden="true"></i> GitHub 发布连接</h2>
+      <p>本地草稿无需登录。需要发布或同步时，使用仅具备私有源码仓库 <strong>Contents: Read and write</strong> 权限的 fine-grained token。</p>
+    </div>
+    <div class="mdw-repository-fields">
+      <label>所有者<input id="mdw-owner" autocomplete="off" value="CharlieZiChen"></label>
+      <label>源码仓库<input id="mdw-repo" autocomplete="off" value="CharlieZiChen-blog-source"></label>
+      <label>分支<input id="mdw-branch" autocomplete="off" value="main"></label>
+      <label class="mdw-token-field">访问令牌<input id="mdw-token" type="password" autocomplete="new-password" placeholder="github_pat_…"></label>
+    </div>
+    <div class="mdw-connection-actions">
+      <button id="mdw-connect-button" class="mdw-button mdw-button-primary" type="button">
+        <i class="fab fa-github" aria-hidden="true"></i> 连接并同步
+      </button>
+      <button id="mdw-sync-button" class="mdw-button mdw-button-secondary" type="button" disabled>重新同步</button>
+      <button id="mdw-disconnect-button" class="mdw-button mdw-button-secondary" type="button" hidden>断开连接</button>
+      <a class="mdw-help-link" href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">创建受限令牌</a>
+      <span id="mdw-connection-status" class="mdw-connection-status" role="status">未连接；令牌只保存在当前工作台页面的内存中，刷新后需要重新输入。</span>
+    </div>
+  </section>
+
+  <p class="mdw-local-note">
+    <i class="fas fa-shield-alt" aria-hidden="true"></i>
+    导入和普通保存只写入当前浏览器；“发布并退出编辑”才会提交到 GitHub。提交后由 GitHub Actions 构建，其他访客会在部署完成后看到更新。
+  </p>
+
+  <div id="mdw-status" class="mdw-status" role="status" aria-live="polite" hidden></div>
+
+  <div class="mdw-layout">
+    <aside class="mdw-library" aria-labelledby="mdw-library-title">
+      <div class="mdw-library-heading">
+        <h2 id="mdw-library-title">我的文稿</h2>
+        <span id="mdw-document-count" class="mdw-count">0</span>
+      </div>
+      <div id="mdw-document-list" class="mdw-document-list"></div>
+      <p id="mdw-library-empty" class="mdw-library-empty">还没有文稿，请先选择 Markdown 文件。</p>
+    </aside>
+
+    <section class="mdw-stage" aria-live="polite">
+      <div id="mdw-empty-state" class="mdw-empty-state">
+        <i class="far fa-file-alt" aria-hidden="true"></i>
+        <h2>选择一份文稿开始</h2>
+        <p>导入后的文稿会出现在左侧，并拥有可收藏的本地页面地址。</p>
+      </div>
+
+      <div id="mdw-view-mode" hidden>
+        <header class="mdw-document-header">
+          <div>
+            <h2 id="mdw-document-title"></h2>
+            <p id="mdw-document-meta"></p>
+          </div>
+          <div class="mdw-actions">
+            <button id="mdw-edit-button" class="mdw-button mdw-button-primary" type="button">
+              <i class="fas fa-edit" aria-hidden="true"></i>
+              进入编辑模式
+            </button>
+            <button id="mdw-publish-button" class="mdw-button mdw-button-secondary" type="button" disabled>
+              <i class="fas fa-cloud-upload-alt" aria-hidden="true"></i>
+              发布当前文稿
+            </button>
+            <button id="mdw-download-button" class="mdw-button mdw-button-secondary" type="button">
+              <i class="fas fa-download" aria-hidden="true"></i>
+              下载 Markdown
+            </button>
+          </div>
+        </header>
+        <article id="mdw-preview" class="mdw-preview"></article>
+      </div>
+
+      <div id="mdw-edit-mode" hidden>
+        <header class="mdw-document-header">
+          <div>
+            <h2>Markdown 编辑模式</h2>
+            <p>保存并退出后，预览页面会立即更新。</p>
+          </div>
+          <div class="mdw-actions">
+            <button id="mdw-save-button" class="mdw-button mdw-button-primary" type="button">
+              <i class="fas fa-check" aria-hidden="true"></i>
+              保存草稿并退出
+            </button>
+            <button id="mdw-publish-edit-button" class="mdw-button mdw-button-primary" type="button" disabled>
+              <i class="fas fa-cloud-upload-alt" aria-hidden="true"></i>
+              发布并退出编辑
+            </button>
+            <button id="mdw-cancel-button" class="mdw-button mdw-button-secondary" type="button">取消修改</button>
+          </div>
+        </header>
+        <label class="mdw-editor-label" for="mdw-editor">Markdown 内容</label>
+        <textarea id="mdw-editor" class="mdw-editor" spellcheck="false"></textarea>
+        <p class="mdw-editor-help">支持标题、列表、引用、代码块、表格、链接和图片等常用 Markdown 语法。快捷键：⌘/Ctrl + S。</p>
+      </div>
+    </section>
+  </div>
+
+  <section id="mdw-deployment" class="mdw-deployment" aria-live="polite" hidden>
+    <h2>发布状态</h2>
+    <p id="mdw-deployment-message"></p>
+    <div class="mdw-actions">
+      <a id="mdw-live-link" class="mdw-button mdw-button-primary" target="_blank" rel="noopener noreferrer" hidden>查看共享页面</a>
+      <a id="mdw-actions-link" class="mdw-button mdw-button-secondary" target="_blank" rel="noopener noreferrer" hidden>查看构建进度</a>
+    </div>
+  </section>
+
+  <noscript><p class="mdw-status mdw-status-error">此功能需要启用 JavaScript。</p></noscript>
+</div>
+
+<script src="/md-editor/editor-core.js" defer></script>
+<script src="/md-editor/editor.js" defer></script>
+
+</div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2026 By CharlieZC</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">Hi , welcome to my <a href="https://charliezichen.github.io/">blog</a>!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>let pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+
+  // removeEventListener
+  btf.removeGlobalFnEvent('pjax')
+  btf.removeGlobalFnEvent('themeChange')
+
+  document.getElementById('rightside').classList.remove('rightside-show')
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+  typeof disqusjs === 'object' && disqusjs.destroy()
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+})
+
+document.addEventListener('pjax:error', e => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/404')
+  }
+})</script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
