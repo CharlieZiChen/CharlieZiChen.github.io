@@ -211,6 +211,122 @@
     { id: 'pdf', label: 'PDF', description: '嵌入站内或外部 PDF', snippet: '{% pdf /pdf/example.pdf %}', select: '/pdf/example.pdf' }
   ])
 
+  // A small deterministic content fingerprint keeps the browser data model
+  // synchronous and avoids persisting a full second copy of every document.
+  const contentHash = source => {
+    const content = normalizeContent(source)
+    let hash = 0x811c9dc5
+    for (let index = 0; index < content.length; index += 1) {
+      hash ^= content.charCodeAt(index)
+      hash = Math.imul(hash, 0x01000193)
+    }
+    return `fnv1a-${(hash >>> 0).toString(16).padStart(8, '0')}-${content.length}`
+  }
+
+  const migrateDocument = (document = {}) => {
+    const content = stripManagedDocumentChrome(document.content || '')
+    const remotePath = String(document.remotePath || '')
+    const baseContentHash = String(document.baseContentHash || document.publishedHash || '')
+    const dirty = remotePath ? (!baseContentHash || contentHash(content) !== baseContentHash) : true
+
+    return {
+      ...document,
+      content,
+      baseContentHash,
+      publishedHash: String(document.publishedHash || baseContentHash),
+      dirty,
+      remotePath,
+      syncStatus: document.syncStatus === 'conflict' ? 'conflict' : (dirty ? 'local-ahead' : 'clean')
+    }
+  }
+
+  const mergeRemoteDocuments = (localDocuments = [], remoteDocuments = []) => {
+    const locals = localDocuments.map(migrateDocument)
+    const consumed = new Set()
+    const merged = remoteDocuments.map(remoteInput => {
+      const remote = migrateDocument({ ...remoteInput, baseContentHash: contentHash(remoteInput.content || '') })
+      const localIndex = locals.findIndex((candidate, index) => !consumed.has(index) && (
+        (candidate.remotePath && candidate.remotePath === remote.remotePath) ||
+        (candidate.slug && remote.slug && candidate.slug === remote.slug)
+      ))
+
+      if (localIndex < 0) {
+        return { ...remote, dirty: false, syncStatus: 'clean' }
+      }
+
+      consumed.add(localIndex)
+      const local = locals[localIndex]
+      const localHash = contentHash(local.content)
+      const remoteHash = contentHash(remote.content)
+      const localChanged = local.baseContentHash ? localHash !== local.baseContentHash : localHash !== remoteHash
+      const remoteChanged = Boolean(local.sha && remote.sha && local.sha !== remote.sha)
+
+      if (!localChanged) {
+        return {
+          ...local,
+          ...remote,
+          baseContentHash: remoteHash,
+          publishedHash: remoteHash,
+          dirty: false,
+          syncStatus: 'clean',
+          conflictRemoteContent: '',
+          conflictRemoteSha: ''
+        }
+      }
+
+      if (remoteChanged) {
+        return {
+          ...remote,
+          ...local,
+          dirty: true,
+          syncStatus: 'conflict',
+          conflictRemoteContent: remote.content,
+          conflictRemoteSha: remote.sha,
+          remoteShaObserved: remote.sha
+        }
+      }
+
+      return {
+        ...remote,
+        ...local,
+        sha: remote.sha || local.sha,
+        baseContentHash: remoteHash,
+        publishedHash: remoteHash,
+        dirty: localHash !== remoteHash,
+        syncStatus: localHash === remoteHash ? 'clean' : 'local-ahead',
+        conflictRemoteContent: '',
+        conflictRemoteSha: ''
+      }
+    })
+
+    locals.forEach((document, index) => {
+      if (!consumed.has(index)) merged.push(document)
+    })
+
+    return merged
+  }
+
+  const ACTIVE_PUBLISH_STATUSES = Object.freeze(['committing', 'deploying', 'timed_out'])
+
+  const createPublishJob = (options = {}) => {
+    const startedAt = Number(options.startedAt || Date.now())
+    const timeoutMs = Number(options.timeoutMs || 10 * 60 * 1000)
+    return {
+      id: String(options.id || `${startedAt.toString(36)}-${Math.random().toString(36).slice(2, 8)}`),
+      documentId: String(options.documentId || ''),
+      remotePath: String(options.remotePath || ''),
+      pagePath: String(options.pagePath || ''),
+      version: String(options.version || ''),
+      snapshotHash: String(options.snapshotHash || ''),
+      startedAt,
+      deadlineAt: startedAt + timeoutMs,
+      status: 'committing',
+      message: '正在提交到 GitHub…'
+    }
+  }
+
+  const isPublishLocked = job => Boolean(job && ACTIVE_PUBLISH_STATUSES.includes(job.status))
+
   const prepareManagedDocument = (source, options = {}) => {
     const now = options.now instanceof Date ? options.now : new Date(options.now || Date.now())
     const parsed = splitFrontMatter(source)
@@ -271,11 +387,17 @@
     .match(/class="managed-page-version"[^>]*data-version="([^"]+)"/i)?.[1] || ''
 
   return {
+    ACTIVE_PUBLISH_STATUSES,
     applyTextEdit,
     BUTTERFLY_COMPONENTS,
+    contentHash,
+    createPublishJob,
     decodeBase64,
     deriveTitle,
     encodeBase64,
+    isPublishLocked,
+    mergeRemoteDocuments,
+    migrateDocument,
     normalizeContent,
     normalizeMarkdownStructure,
     prepareManagedDocument,
