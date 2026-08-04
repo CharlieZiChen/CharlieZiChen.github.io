@@ -73,7 +73,9 @@
     const title = deriveTitle(source, fileName)
     const slug = slugify(options.slug || fileName.replace(/\.md$/i, '') || title)
     const version = String(options.version || `${now.getTime().toString(36)}-${Math.random().toString(36).slice(2, 8)}`)
-    const pagePath = `/pages/${encodeURIComponent(slug)}/`
+    // Keep the Hexo permalink unescaped. Hexo uses this value as the output
+    // directory, while browsers encode the Unicode path when requesting it.
+    const pagePath = `/pages/${slug}/`
     let frontMatter = parsed.frontMatter
 
     frontMatter = upsertFrontMatterField(frontMatter, 'layout', 'page')
