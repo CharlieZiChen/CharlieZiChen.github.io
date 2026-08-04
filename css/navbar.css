@@ -77,6 +77,42 @@
     margin-top: 14px;
     border: 1px solid #88f0b3dc;
 }
+
+/* Give desktop users enough time to cross the gap into a submenu. */
+@media screen and (min-width: 769px) {
+    #nav .menus_items .menus_item > .menus_item_child,
+    #nav .menus_items .icat_menus_item > .menus_item_child {
+        display: block;
+        visibility: hidden;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(6px);
+        animation: none;
+        transition:
+            opacity 160ms ease 280ms,
+            transform 160ms ease 280ms,
+            visibility 0s linear 440ms,
+            pointer-events 0s linear 440ms;
+    }
+
+    #nav .menus_items .menus_item:hover > .menus_item_child,
+    #nav .menus_items .menus_item:focus-within > .menus_item_child,
+    #nav .menus_items .icat_menus_item:hover > .menus_item_child,
+    #nav .menus_items .icat_menus_item:focus-within > .menus_item_child {
+        visibility: visible;
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(0);
+        transition-delay: 80ms, 80ms, 0s, 0s;
+    }
+
+    #nav .menus_items .menus_item > .menus_item_child::before,
+    #nav .menus_items .icat_menus_item > .menus_item_child::before {
+        top: -18px;
+        height: 30px;
+    }
+}
+
 #nav .menus_items .menus_item .menus_item_child li a, #nav .menus_items .icat_menus_item .menus_item_child li a {
     padding: 8px 34px;
     text-align: center;
@@ -288,7 +324,6 @@
     }
 }
 /* IPAD菜单栏调整 */
-
 
 
 
