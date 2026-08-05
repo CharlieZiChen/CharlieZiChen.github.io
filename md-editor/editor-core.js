@@ -74,12 +74,41 @@
     return `---\n${parsed.frontMatter}\n---\n\n${body}`.trimEnd() + '\n'
   }
 
-  const normalizeMarkdownStructure = source => {
+  const repairFragmentedListFences = body => {
+    let repairs = 0
+    const rebuild = (match, indent, marker, outerFence, innerFence, info, rawCode) => {
+      if (outerFence[0] !== innerFence[0] || outerFence.length !== innerFence.length) return match
+      const codeLines = normalizeContent(rawCode).split('\n')
+      const nonEmptyIndents = codeLines
+        .filter(line => line.trim())
+        .map(line => line.match(/^\s*/)[0].length)
+      const sharedIndent = nonEmptyIndents.length ? Math.min(...nonEmptyIndents) : 0
+      const childIndent = `${indent}${' '.repeat(marker.length + 1)}`
+      const language = String(info || '').trim()
+      repairs += 1
+      return [
+        `${indent}${marker}`,
+        `${childIndent}${innerFence}${language}`,
+        ...codeLines.map(line => line.trim() ? `${childIndent}${line.slice(sharedIndent)}` : ''),
+        `${childIndent}${innerFence}`
+      ].join('\n')
+    }
+    const pattern = /^([ \t]*)(\d+[.)]|[-+*])\s*\n(?:[ \t]*\n)*[ \t]*(`{3,}|~{3,})[ \t]*\n(?:[ \t]*\n)*[ \t]*(`{3,}|~{3,})([^\n]*)\n([\s\S]*?)\n[ \t]*\4[ \t]*\n(?:[ \t]*\n)*[ \t]*\3[ \t]*(?=\n|$)/gm
+    const missingOuterClosePattern = /^([ \t]*)(\d+[.)]|[-+*])\s*\n(?:[ \t]*\n)*[ \t]*(`{3,}|~{3,})[ \t]*\n(?:[ \t]*\n)*[ \t]*(`{3,}|~{3,})([^\n]*)\n([\s\S]*?)\n[ \t]*\4[ \t]*(?=\n(?:[ \t]*\n)*(?:{%|$))/gm
+    const content = normalizeContent(body)
+      .replace(pattern, rebuild)
+      .replace(missingOuterClosePattern, rebuild)
+    return { content, repairs }
+  }
+
+  const repairMarkdownStructure = source => {
     const content = normalizeContent(source)
     const parsed = splitFrontMatter(content)
     const prefix = content.slice(0, parsed.bodyOffset)
-    const lines = parsed.body.split('\n')
+    const fragmented = repairFragmentedListFences(parsed.body)
+    const lines = fragmented.content.split('\n')
     const output = []
+    let repairs = fragmented.repairs
 
     for (let index = 0; index < lines.length; index += 1) {
       const opening = lines[index].match(/^(\s*)([-+*]|\d+[.)])\s+(`{3,}|~{3,})\s*([^\s].*)?$/)
@@ -112,14 +141,17 @@
       output.push(`${markerIndent}${marker}`)
       output.push(`${childIndent}${opening[3]}${opening[4] ? ` ${opening[4].trim()}` : ''}`)
       codeLines.forEach(line => {
-        output.push(line.trim() ? `${childIndent}${line.slice(sharedIndent)}` : childIndent)
+        output.push(line.trim() ? `${childIndent}${line.slice(sharedIndent)}` : '')
       })
       output.push(`${childIndent}${opening[3]}`)
+      repairs += 1
       index = closingIndex
     }
 
-    return `${prefix}${output.join('\n')}`
+    return { content: `${prefix}${output.join('\n')}`, repairs }
   }
+
+  const normalizeMarkdownStructure = source => repairMarkdownStructure(source).content
 
   const splitMarkdownBlocks = source => {
     const content = normalizeContent(source)
@@ -285,14 +317,26 @@
     parsed.body.split('\n').forEach((line, index) => {
       if (activeFence) {
         const closing = new RegExp(`^\\s*${escapeRegExp(activeFence.character)}{${activeFence.length},}\\s*$`)
-        if (closing.test(line)) activeFence = null
+        if (closing.test(line)) {
+          const meaningful = activeFence.content.filter(value => value.trim())
+          if (meaningful.length === 1 && /^\s*(?:\d+[.)]|[-+*])\s*$/.test(meaningful[0])) {
+            errors.push(`第 ${activeFence.lineNumber}–${index + 1} 行的代码块只包含列表序号“${meaningful[0].trim()}”，序号与正文可能已被拆开`)
+          }
+          activeFence = null
+        } else {
+          const nested = line.match(/^\s*(`{3,}|~{3,})(?:\s*[^\s`~].*)\s*$/)
+          if (nested && nested[1][0] === activeFence.character && nested[1].length >= activeFence.length) {
+            errors.push(`第 ${index + 1} 行在代码块内部又出现了同长度的围栏，可能是所见即所得模式拆坏的结构`)
+          }
+          activeFence.content.push(line)
+        }
         return
       }
       const opening = line.match(/^\s*(`{3,}|~{3,})(?:\s*[^\s`~].*)?\s*$/)
-      if (opening) activeFence = { character: opening[1][0], length: opening[1].length, lineNumber: index + 1 }
+      if (opening) activeFence = { character: opening[1][0], content: [], length: opening[1].length, lineNumber: index + 1 }
     })
     if (activeFence) errors.push(`第 ${activeFence.lineNumber} 行开始的代码块缺少结束标记`)
-    return errors
+    return [...new Set(errors)]
   }
 
   const deriveWorkflowState = (run, jobs = []) => {
@@ -557,6 +601,7 @@
     migrateDocument,
     normalizeContent,
     normalizeMarkdownStructure,
+    repairMarkdownStructure,
     prepareManagedDocument,
     readFrontMatterValue,
     readManagedVersion,

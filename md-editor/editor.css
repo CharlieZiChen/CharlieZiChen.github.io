@@ -7,6 +7,13 @@
   color: var(--font-color, #4c4948);
 }
 
+/* editor.css is loaded only by /md-editor/, so this safely overrides Butterfly's
+   1000px hide-aside limit without widening ordinary pages. */
+#content-inner.layout.hide-aside {
+  width: min(96vw, 1680px);
+  max-width: 1680px;
+}
+
 .mdw-shell *,
 .mdw-shell *::before,
 .mdw-shell *::after {
@@ -235,7 +242,7 @@
 
 .mdw-layout {
   display: grid;
-  grid-template-columns: minmax(210px, 260px) minmax(0, 1fr);
+  grid-template-columns: minmax(200px, 220px) minmax(0, 1fr);
   gap: 1rem;
   align-items: start;
 }
@@ -537,6 +544,7 @@
 
 .mdw-rich-editor { min-width: 0; }
 .mdw-rich-editor .toastui-editor-defaultUI {
+  height: clamp(640px, 72vh, 860px) !important;
   border-color: var(--mdw-border);
   border-radius: 0 0 12px 12px;
   overflow: hidden;
@@ -602,6 +610,12 @@
 }
 
 .mdw-butterfly-widget:hover { box-shadow: 0 5px 18px color-mix(in srgb, var(--mdw-accent) 17%, transparent); }
+.mdw-structure-widget {
+  border-color: color-mix(in srgb, #63738a 45%, var(--mdw-border));
+  border-left-color: #63738a;
+  background: linear-gradient(135deg, color-mix(in srgb, #63738a 9%, var(--mdw-panel)), var(--mdw-panel));
+}
+.mdw-structure-widget .mdw-butterfly-widget-badge { background: #63738a; }
 .mdw-butterfly-widget-badge {
   padding: 0.1rem 0.4rem;
   border-radius: 999px;
@@ -676,7 +690,7 @@
 }
 
 .mdw-component-dialog {
-  width: min(760px, calc(100vw - 2rem));
+  width: min(920px, calc(100vw - 2rem));
   max-height: min(88vh, 900px);
   padding: 0;
   border: 1px solid var(--mdw-border);
@@ -720,10 +734,17 @@
 .mdw-component-preview { min-height: 54px; }
 .mdw-component-render { color: var(--font-color, #4c4948); line-height: 1.65; }
 .mdw-component-preview-body { white-space: pre-wrap; }
-.mdw-preview-note { padding: 0.75rem 0.9rem; border-left: 4px solid var(--mdw-accent); border-radius: 8px; background: var(--mdw-panel); }
-.mdw-preview-note.is-success { border-left-color: #2eaf6d; }
-.mdw-preview-note.is-warning { border-left-color: #f0a020; }
-.mdw-preview-note.is-danger { border-left-color: #d83b57; }
+.mdw-preview-note { margin: 0; }
+.mdw-preview-note .mdw-component-preview-body { color: inherit; }
+.mdw-preview-list-code {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.45rem 0.65rem;
+  align-items: start;
+}
+.mdw-preview-list-marker { padding-top: 0.55rem; font-weight: 700; }
+.mdw-preview-list-lead { padding-top: 0.55rem; }
+.mdw-preview-list-code .mdw-preview-code { grid-column: 2; width: 100%; }
 .mdw-preview-label { padding: 0.13rem 0.45rem; border-radius: 5px; background: color-mix(in srgb, var(--mdw-accent) 18%, var(--mdw-panel)); color: inherit; }
 .mdw-preview-button { display: inline-flex; padding: 0.45rem 0.8rem; border: 1px solid var(--mdw-accent); border-radius: 8px; background: var(--mdw-accent); color: #fff; font-weight: 700; text-decoration: none; }
 .mdw-preview-button.is-outline { background: transparent; color: var(--mdw-accent); }
@@ -771,6 +792,28 @@
 .mdw-field textarea { min-height: 130px; font-family: inherit; }
 .mdw-field-code textarea { font: 0.84rem/1.6 Consolas, Menlo, "PingFang SC", monospace; }
 .mdw-field-help { margin: 0.2rem 0 0; color: var(--mdw-muted); font-size: 0.74rem; }
+
+.mdw-component-advanced {
+  grid-column: 1 / -1;
+  padding: 0.75rem;
+  border: 1px solid var(--mdw-border);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--mdw-accent) 3%, var(--mdw-panel));
+}
+.mdw-component-advanced > summary { color: var(--mdw-muted); cursor: pointer; font-size: 0.82rem; font-weight: 700; }
+.mdw-component-advanced-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.85rem; margin-top: 0.8rem; }
+.mdw-style-template { grid-column: 1 / -1; min-width: 0; }
+.mdw-style-template-heading { display: flex; align-items: center; justify-content: space-between; gap: 0.7rem; }
+.mdw-style-template pre {
+  max-height: 260px;
+  margin: 0.55rem 0 0;
+  padding: 0.75rem;
+  overflow: auto;
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--global-bg, #fff) 75%, var(--mdw-panel));
+  font: 0.76rem/1.55 Consolas, Menlo, monospace;
+  white-space: pre;
+}
 
 .mdw-checkbox-field {
   display: flex;
@@ -873,6 +916,7 @@
   .mdw-front-matter summary { align-items: flex-start; flex-direction: column; }
   .mdw-media summary { align-items: flex-start; flex-direction: column; }
   .mdw-component-fields,
+  .mdw-component-advanced-fields,
   .mdw-repeater-item-fields { grid-template-columns: 1fr; }
   .mdw-asset-item { grid-template-columns: auto minmax(0, 1fr); }
   .mdw-asset-actions { grid-column: 1 / -1; }

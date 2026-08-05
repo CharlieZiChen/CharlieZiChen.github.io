@@ -14,9 +14,22 @@
   const colors = ['default', 'blue', 'pink', 'red', 'orange', 'purple', 'green']
   const noteTypes = ['default', 'primary', 'info', 'success', 'warning', 'danger']
   const noteStyles = ['simple', 'modern', 'flat', 'disabled']
-  const colorOptions = colors.map(value => ({ label: value, value }))
-  const noteTypeOptions = noteTypes.map(value => ({ label: value, value }))
-  const noteStyleOptions = noteStyles.map(value => ({ label: value, value }))
+  const noteStylePresets = ['md-note-soft', 'md-note-outline', 'md-note-shadow', 'md-note-glass']
+  const colorLabels = { default: '默认', blue: '蓝色', pink: '粉色', red: '红色', orange: '橙色', purple: '紫色', green: '绿色' }
+  const colorOptions = colors.map(value => ({ label: `${colorLabels[value]}（${value}）`, value }))
+  const noteTypeOptions = [
+    { label: '默认', value: 'default' }, { label: '主要', value: 'primary' }, { label: '信息', value: 'info' },
+    { label: '成功', value: 'success' }, { label: '警告', value: 'warning' }, { label: '危险', value: 'danger' }
+  ]
+  const noteStyleOptions = [
+    { label: '简洁描边（simple）', value: 'simple' }, { label: '现代色块（modern）', value: 'modern' },
+    { label: '左侧强调（flat）', value: 'flat' }, { label: '中性禁用（disabled）', value: 'disabled' }
+  ]
+  const notePresetOptions = [
+    { label: '不使用额外模板', value: '' }, { label: '柔和卡片', value: 'md-note-soft' },
+    { label: '完整描边', value: 'md-note-outline' }, { label: '悬浮阴影', value: 'md-note-shadow' },
+    { label: '毛玻璃卡片', value: 'md-note-glass' }, { label: '自定义 CSS 类', value: 'custom' }
+  ]
   const PLACEHOLDER_PATTERN_SOURCE = '\\[\\[BUTTERFLY_COMPONENT_[a-z0-9-]+\\]\\]'
 
   const text = (key, label, extra = {}) => ({ key, label, type: 'text', ...extra })
@@ -31,19 +44,31 @@
   const schemas = Object.freeze({
     note: {
       label: '提示块',
-      defaults: { kind: 'info', style: 'modern', icon: '', extraClass: '', body: '在这里填写提示内容' },
+      defaults: { kind: 'info', style: 'modern', icon: '', extraPreset: '', extraClass: '', body: '在这里填写提示内容' },
       fields: [
-        select('kind', '类型', noteTypeOptions),
-        select('style', '样式', noteStyleOptions),
-        text('icon', 'Font Awesome 图标类', { placeholder: 'fa-info-circle' }),
-        text('extraClass', '额外样式类', { placeholder: '可选' }),
+        select('kind', '语义类型', noteTypeOptions, { help: '控制提示块的主题颜色。' }),
+        select('style', '主题样式', noteStyleOptions, { help: '直接使用 Butterfly 自带的四种提示块样式。' }),
+        text('icon', 'Font Awesome 图标类', { placeholder: 'fa-info-circle', help: '可留空；例如 fa-info-circle、fa-check-circle。' }),
+        select('extraPreset', '额外样式模板', notePresetOptions, { advanced: true, help: '模板会同时作用于即时预览和正式页面。' }),
+        text('extraClass', '自定义样式类名', { advanced: true, placeholder: 'my-custom-note', help: '只填写类名，不要包含开头的点号。', when: { key: 'extraPreset', equals: 'custom' } }),
+        { key: 'styleTemplate', label: 'CSS 新手模板', type: 'style-template', advanced: true, when: { key: 'extraPreset', equals: 'custom' } },
         textarea('body', '内容', { required: true, markdown: true })
       ]
     },
     subnote: {
       label: '子提示块',
-      defaults: { kind: 'info', style: 'flat', icon: '', extraClass: '', body: '子提示内容' },
+      defaults: { kind: 'info', style: 'flat', icon: '', extraPreset: '', extraClass: '', body: '子提示内容' },
       fields: []
+    },
+    listCode: {
+      label: '列表代码块',
+      defaults: { indent: '', marker: '1.', lead: '', language: 'text', code: '' },
+      fields: [
+        text('marker', '序号或列表符号', { required: true, placeholder: '4.', help: '支持 4.、4)、-、+、*。' }),
+        text('language', '代码语言', { placeholder: 'text', help: '用于代码高亮；普通文本可填写 text。' }),
+        text('lead', '序号后的文字', { placeholder: '可选', help: '没有标题文字时保持为空。' }),
+        textarea('code', '代码内容', { required: true, code: true })
+      ]
     },
     label: {
       label: '彩色标签',
@@ -216,6 +241,8 @@
     const args = entry.args || ''
     const body = entry.body || ''
 
+    if (name === 'listCode') return { ...defaults, ...(entry.values || {}) }
+
     if (name === 'note' || name === 'subnote') {
       const words = splitWords(args)
       const style = words.find(word => noteStyles.includes(word)) || defaults.style
@@ -223,7 +250,8 @@
       const iconIndex = words.length > 1 && /^fa/.test(words[words.length - 2]) ? words.length - 2 : -1
       const icon = iconIndex >= 0 ? words[iconIndex] : ''
       const extras = words.filter((word, index) => word !== style && word !== kind && index !== iconIndex && !/^fa[srlbd]?$/.test(word))
-      return { ...defaults, kind, style, icon, extraClass: extras.join(' '), body }
+      const extraPreset = extras.find(word => noteStylePresets.includes(word)) || (extras.length ? 'custom' : '')
+      return { ...defaults, kind, style, icon, extraPreset, extraClass: extras.filter(word => word !== extraPreset).join(' '), body }
     }
     if (name === 'label') {
       const words = splitWords(args)
@@ -278,9 +306,25 @@
 
   const serializeValues = (nameValue, values) => {
     const name = nameValue === 'button' ? 'btn' : nameValue
+    if (name === 'listCode') {
+      const indent = String(values.indent || '')
+      const marker = String(values.marker || '1.').trim()
+      const lead = String(values.lead || '').trim()
+      const language = String(values.language || '').trim()
+      const childIndent = `${indent}${' '.repeat(marker.length + 1)}`
+      const code = normalize(values.code).replace(/^\n|\n$/g, '')
+      const raw = [
+        `${indent}${marker}${lead ? ` ${lead}` : ''}`,
+        `${childIndent}\`\`\`${language}`,
+        ...code.split('\n').map(line => line ? `${childIndent}${line}` : ''),
+        `${childIndent}\`\`\``
+      ].join('\n')
+      return { args: '', body: raw, paired: false, raw }
+    }
     if (name === 'note' || name === 'subnote') {
       const icon = splitWords(values.icon).filter(word => /^fa-/.test(word)).pop() || ''
-      return { args: [values.kind, values.extraClass, icon, values.style].filter(Boolean).join(' '), body: values.body, paired: true }
+      const extra = values.extraPreset && values.extraPreset !== 'custom' ? values.extraPreset : values.extraClass
+      return { args: [values.kind, extra, icon, values.style].filter(Boolean).join(' '), body: values.body, paired: true }
     }
     if (name === 'label') return { args: `${encodeToken(values.content)} ${values.color || 'default'}`, body: '', paired: false }
     if (name === 'btn') {
@@ -333,6 +377,12 @@
 
   const applyValues = (entry, values) => {
     const serialized = serializeValues(entry.name, values)
+    if (entry.name === 'listCode') {
+      entry.raw = serialized.raw
+      entry.values = clone(values)
+      entry.label = schemas.listCode.label
+      return entry
+    }
     entry.name = entry.name === 'button' ? 'btn' : entry.name
     entry.args = serialized.args
     entry.body = normalize(serialized.body).replace(/^\n|\n$/g, '')
@@ -343,6 +393,7 @@
   }
 
   const serializeEntry = entry => {
+    if (entry.name === 'listCode') return serializeValues(entry.name, entry.values || valuesFromEntry(entry)).raw
     const opening = `{% ${entry.name}${entry.args ? ` ${entry.args.trim()}` : ''} %}`
     return entry.paired ? `${opening}\n${String(entry.body || '').replace(/^\n|\n$/g, '')}\n{% end${entry.name} %}` : opening
   }
@@ -367,6 +418,18 @@
     })
     const inlineExpression = new RegExp(`{%\\s*(?:${inlineTags.map(escapeRegExp).join('|')})\\b[^%]*?%}`, 'gi')
     markdown = markdown.replace(inlineExpression, replaceRaw)
+    const listFenceExpression = /^([ \t]*)(\d+[.)]|[-+*])(?:[ \t]+([^\n]*))?\n(?:[ \t]*\n)*([ \t]+)(`{3,}|~{3,})([^\n]*)\n([\s\S]*?)\n\4\5[ \t]*(?=\n|$)/gm
+    markdown = markdown.replace(listFenceExpression, (raw, indent, marker, lead, childIndent, fence, language, rawCode) => {
+      if (childIndent.length <= indent.length) return raw
+      const code = normalize(rawCode).split('\n').map(line => line.startsWith(childIndent) ? line.slice(childIndent.length) : line).join('\n')
+      counter += 1
+      const seed = core?.contentHash ? core.contentHash(`${counter}:${raw}`).replace(/[^a-z0-9-]/gi, '') : `${Date.now().toString(36)}${counter}`
+      const id = `${seed}-${counter}`.toLowerCase()
+      const placeholder = `[[BUTTERFLY_COMPONENT_${id}]]`
+      const values = { indent, marker, lead: String(lead || '').trim(), language: String(language || '').trim(), code }
+      entries.push({ body: raw, id, kind: 'markdown-structure', label: schemas.listCode.label, name: 'listCode', paired: false, placeholder, raw, values })
+      return `${indent}${marker} ${placeholder}`
+    })
     return { entries, markdown }
   }
 
@@ -375,6 +438,10 @@
     entries.forEach(entry => {
       const raw = serializeEntry(entry)
       const escaped = entry.placeholder.replace(/\[/g, '\\[').replace(/\]/g, '\\]')
+      if (entry.name === 'listCode') {
+        const wrappedPlaceholder = `(?:\\$\\$widget\\d+\\s+)?(?:${escapeRegExp(entry.placeholder)}|${escapeRegExp(escaped)})(?:\\$\\$)?`
+        markdown = markdown.replace(new RegExp(`^[ \\t]*(?:\\d+[.)]|[-+*])[ \\t]+${wrappedPlaceholder}[ \\t]*$`, 'gm'), raw)
+      }
       markdown = markdown
         .replace(new RegExp(`(?:\\$\\$widget\\d+\\s+)?${escapeRegExp(entry.placeholder)}(?:\\$\\$)?`, 'g'), raw)
         .replace(new RegExp(`(?:\\$\\$widget\\d+\\s+)?${escapeRegExp(escaped)}(?:\\$\\$)?`, 'g'), raw)
@@ -407,12 +474,15 @@
       if ((field.inputMode === 'url' || field.type === 'asset') && value && !/^(?:https?:\/\/|\/|mdw-asset:\/\/)/i.test(String(value))) errors.push(`${label}需要使用 http(s)、站内路径或已上传资源`)
     })
     if (schema) visit(schema.fields, values)
+    if (name === 'listCode' && !/^(?:\d+[.)]|[-+*])$/.test(String(values.marker || '').trim())) errors.push('序号或列表符号格式不正确')
+    if ((name === 'note' || name === 'subnote') && values.extraPreset === 'custom' && !/^[A-Za-z_][A-Za-z0-9_-]*$/.test(String(values.extraClass || ''))) errors.push('自定义样式类名只能包含字母、数字、下划线和连字符，且不能以数字开头')
     if (name === 'gallery' && values.mode === 'url' && !String(values.dataUrl || '').trim()) errors.push('远程 JSON 地址不能为空')
     return errors
   }
 
   const summarizeEntry = entry => {
     const values = entry.values || valuesFromEntry(entry)
+    if (entry.name === 'listCode') return `${values.marker || '1.'} ${values.language || 'text'} · ${String(values.code || '').split('\n')[0] || '空代码块'}`
     const preferred = values.content || values.display || values.headline || values.name || values.source || values.body || entry.args
     return String(preferred || '点击设置组件内容').replace(/\s+/g, ' ').trim().slice(0, 96)
   }

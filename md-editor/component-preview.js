@@ -45,17 +45,34 @@
     const root = element('div', `mdw-component-render mdw-component-render-${name}`)
 
     if (name === 'note' || name === 'subnote') {
-      root.classList.add('mdw-preview-note', `is-${values.kind || 'default'}`, `is-${values.style || 'modern'}`)
+      const extra = values.extraPreset && values.extraPreset !== 'custom' ? values.extraPreset : values.extraClass
+      root.classList.add('note', 'mdw-preview-note', values.kind || 'default', values.style || 'modern')
+      text(extra).split(/\s+/).filter(Boolean).forEach(className => root.classList.add(className))
+      if (values.icon) {
+        root.classList.add('icon-padding')
+        root.append(element('i', `note-icon ${text(values.icon).replace(/[^A-Za-z0-9_ -]/g, '')}`))
+      }
       root.append(body(values.body))
+    } else if (name === 'listCode') {
+      root.classList.add('mdw-preview-list-code')
+      const marker = element('span', 'mdw-preview-list-marker', values.marker || '1.')
+      const code = element('pre', 'mdw-preview-code')
+      code.dataset.language = values.language || 'text'
+      code.textContent = values.code || '暂无代码内容'
+      root.append(marker)
+      if (values.lead) root.append(element('span', 'mdw-preview-list-lead', values.lead))
+      root.append(code)
     } else if (name === 'label') {
-      const mark = element('mark', `mdw-preview-label is-${values.color || 'default'}`, values.content || '标签文字')
+      const mark = element('mark', `hl-label ${values.color || 'default'}`, values.content || '标签文字')
       root.append(mark)
     } else if (name === 'btn') {
-      const button = link(values.content || '按钮文字', values.url, `mdw-preview-button is-${values.color || 'default'}`)
-      if (values.outline) button.classList.add('is-outline')
-      if (values.block) button.classList.add('is-block')
-      if (values.larger) button.classList.add('is-larger')
-      root.classList.toggle('is-centered', Boolean(values.center))
+      const button = link('', values.url, `btn-beautify ${values.color || 'default'}`)
+      if (values.outline) button.classList.add('outline')
+      if (values.center) button.classList.add('center')
+      if (values.block) button.classList.add('block')
+      if (values.larger) button.classList.add('larger')
+      if (values.icon) button.append(element('i', text(values.icon).replace(/[^A-Za-z0-9_ -]/g, '')))
+      if (values.content) button.append(element('span', '', values.content))
       root.append(button)
     } else if (name === 'hideInline') {
       const details = element('details', 'mdw-preview-disclosure is-inline')

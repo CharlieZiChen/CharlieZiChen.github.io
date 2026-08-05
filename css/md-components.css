@@ -1,0 +1,56 @@
+/* Shared Butterfly component presets used by published pages and /md-editor/. */
+.note.md-note-soft {
+  border: 0 !important;
+  border-left: 5px solid var(--theme-color, #49b1f5) !important;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--theme-color, #49b1f5) 9%, var(--card-bg, #fff)) !important;
+}
+
+.note.md-note-outline {
+  border: 2px solid color-mix(in srgb, var(--theme-color, #49b1f5) 58%, transparent) !important;
+  border-radius: 12px;
+  background: transparent !important;
+}
+
+.note.md-note-shadow {
+  border: 0 !important;
+  border-radius: 14px;
+  background: var(--card-bg, #fff) !important;
+  box-shadow: 0 10px 28px rgba(25, 45, 75, 0.14);
+}
+
+.note.md-note-glass {
+  border: 1px solid rgba(255, 255, 255, 0.42) !important;
+  border-left: 5px solid color-mix(in srgb, var(--theme-color, #49b1f5) 75%, #fff) !important;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.68) !important;
+  box-shadow: 0 10px 30px rgba(25, 45, 75, 0.12);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+[data-theme='dark'] .note.md-note-shadow {
+  background: var(--card-bg, #20252f) !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
+}
+
+[data-theme='dark'] .note.md-note-glass {
+  border-color: rgba(255, 255, 255, 0.14) !important;
+  background: rgba(30, 36, 48, 0.72) !important;
+}
+
+/*
+ * Custom note template for beginners
+ *
+ * 1. Copy the block below and remove the surrounding comment markers.
+ * 2. Replace "my-custom-note" with your class name.
+ * 3. Enter the same class name in the workbench's advanced style settings.
+ *
+ * .note.my-custom-note {
+ *   background: rgba(255, 255, 255, 0.88) !important;
+ *   border-left: 5px solid #49b1f5 !important;
+ *   border-radius: 12px;
+ *   padding: 16px;
+ *   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+ * }
+ */

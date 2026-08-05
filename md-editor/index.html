@@ -312,12 +312,12 @@
 
   <dialog id="mdw-component-dialog" class="mdw-component-dialog">
     <form method="dialog">
-      <header><div><span class="mdw-dialog-eyebrow">Butterfly 组件</span><h2 id="mdw-component-dialog-title">编辑组件</h2></div><button class="mdw-dialog-close" value="cancel" aria-label="关闭" type="submit">×</button></header>
+      <header><div><span id="mdw-component-dialog-eyebrow" class="mdw-dialog-eyebrow">Butterfly 组件</span><h2 id="mdw-component-dialog-title">编辑组件</h2></div><button class="mdw-dialog-close" value="cancel" aria-label="关闭" type="submit">×</button></header>
       <section class="mdw-component-preview-section" aria-labelledby="mdw-component-preview-title"><div class="mdw-component-preview-heading"><strong id="mdw-component-preview-title">即时预览</strong><span>参数改变会立即反映在这里</span></div><div id="mdw-component-preview" class="mdw-component-preview"></div></section>
       <div id="mdw-component-fields" class="mdw-component-fields"></div>
       <p id="mdw-component-error" class="mdw-component-error" role="alert" hidden></p>
-      <details class="mdw-component-source"><summary>查看将要保存的 Butterfly 语法</summary><pre id="mdw-component-source"></pre></details>
-      <p class="mdw-dialog-help">每个参数独立编辑；保存后仍生成 Butterfly 原生标签。图片和文件可填入外部地址，也可选择本地文件。</p>
+      <details class="mdw-component-source"><summary id="mdw-component-source-label">查看将要保存的 Butterfly 语法</summary><pre id="mdw-component-source"></pre></details>
+      <p id="mdw-dialog-help" class="mdw-dialog-help">每个参数独立编辑；保存后仍生成 Butterfly 原生标签。图片和文件可填入外部地址，也可选择本地文件。</p>
       <footer><button id="mdw-component-delete" class="mdw-button mdw-button-danger" value="delete" type="submit">删除组件</button><span></span><button class="mdw-button mdw-button-secondary" value="cancel" type="submit">取消</button><button id="mdw-component-save" class="mdw-button mdw-button-primary" value="save" type="submit">保存组件</button></footer>
     </form>
   </dialog>

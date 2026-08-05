@@ -31,10 +31,12 @@
     mergeRemoteDocuments,
     migrateDocument,
     normalizeContent,
+    normalizeMarkdownStructure,
     prepareManagedDocument,
     readFrontMatterValue,
     readManagedVersion,
     replaceAssetReferences,
+    repairMarkdownStructure,
     slugify,
     splitFrontMatter,
     stripManagedDocumentChrome,
@@ -58,12 +60,14 @@
     branch: document.getElementById('mdw-branch'),
     componentDelete: document.getElementById('mdw-component-delete'),
     componentDialog: document.getElementById('mdw-component-dialog'),
+    componentDialogEyebrow: document.getElementById('mdw-component-dialog-eyebrow'),
     componentDialogTitle: document.getElementById('mdw-component-dialog-title'),
     componentError: document.getElementById('mdw-component-error'),
     componentFields: document.getElementById('mdw-component-fields'),
     componentPreview: document.getElementById('mdw-component-preview'),
     componentSave: document.getElementById('mdw-component-save'),
     componentSource: document.getElementById('mdw-component-source'),
+    componentSourceLabel: document.getElementById('mdw-component-source-label'),
     componentTools: document.getElementById('mdw-component-tools'),
     conflict: document.getElementById('mdw-conflict'),
     conflictDownload: document.getElementById('mdw-conflict-download'),
@@ -82,6 +86,7 @@
     documentList: document.getElementById('mdw-document-list'),
     documentMeta: document.getElementById('mdw-document-meta'),
     documentTitle: document.getElementById('mdw-document-title'),
+    dialogHelp: document.getElementById('mdw-dialog-help'),
     downloadButton: document.getElementById('mdw-download-button'),
     emptyState: document.getElementById('mdw-empty-state'),
     fileInput: document.getElementById('mdw-file-input'),
@@ -265,15 +270,16 @@
     const id = text.match(/BUTTERFLY_COMPONENT_([a-z0-9-]+)/i)?.[1] || ''
     const entry = componentEntries.find(item => item.id === id)
     const card = document.createElement('span')
-    card.className = 'mdw-butterfly-widget'
+    const isMarkdownStructure = entry?.kind === 'markdown-structure'
+    card.className = `mdw-butterfly-widget${isMarkdownStructure ? ' mdw-structure-widget' : ''}`
     card.dataset.componentId = id
     card.contentEditable = 'false'
     card.tabIndex = 0
     card.setAttribute('role', 'button')
-    card.setAttribute('aria-label', `编辑 ${entry?.label || 'Butterfly'} 组件`)
+    card.setAttribute('aria-label', `编辑 ${entry?.label || 'Butterfly'}${isMarkdownStructure ? '' : '组件'}`)
     const badge = document.createElement('span')
     badge.className = 'mdw-butterfly-widget-badge'
-    badge.textContent = 'Butterfly'
+    badge.textContent = isMarkdownStructure ? 'Markdown 结构' : 'Butterfly'
     const title = document.createElement('strong')
     title.textContent = entry?.label || '主题组件'
     const summary = document.createElement('span')
@@ -450,7 +456,7 @@
   }
 
   const composeDocument = () => {
-    const body = readEditorBody().replace(/^\n+/, '').replace(/\s+$/, '')
+    const body = normalizeMarkdownStructure(readEditorBody()).replace(/^\n+/, '').replace(/\s+$/, '')
     const frontMatter = normalizeContent(elements.frontMatter.value).trim()
     return `${frontMatter ? `---\n${frontMatter}\n---\n\n` : ''}${body}${body ? '\n' : ''}`
   }
@@ -483,7 +489,17 @@
     const activeDocument = getActiveDocument()
     if (!activeDocument || !editor) return
     const sequence = ++editorLoadSequence
-    const parsed = splitFrontMatter(stripManagedDocumentChrome(activeDocument.content))
+    const editableSource = stripManagedDocumentChrome(activeDocument.content)
+    const repaired = repairMarkdownStructure(editableSource)
+    if (repaired.repairs) {
+      activeDocument.content = repaired.content.trimEnd() + '\n'
+      activeDocument.updatedAt = Date.now()
+      activeDocument.dirty = true
+      activeDocument.syncStatus = 'local-ahead'
+      persistDocuments()
+      announce(`已安全修复 ${repaired.repairs} 处被拆开的列表代码块，请确认后再发布。`)
+    }
+    const parsed = splitFrontMatter(repaired.content)
     const hydratedBody = await hydrateAssetReferences(parsed.body)
     if (sequence !== editorLoadSequence || getActiveDocument()?.id !== activeDocument.id) return
     elements.frontMatter.value = parsed.frontMatter
@@ -512,7 +528,7 @@
       editor.setMarkdown(raw, false)
       editor.changeMode('markdown')
     } else {
-      const hydrated = await hydrateAssetReferences(dehydrateAssetReferences(editor.getMarkdown()))
+      const hydrated = await hydrateAssetReferences(normalizeMarkdownStructure(dehydrateAssetReferences(editor.getMarkdown())))
       const protectedBody = adapter.protectMarkdown(hydrated)
       componentEntries = protectedBody.entries
       editor.setMarkdown(protectedBody.markdown, false)
@@ -599,10 +615,42 @@
   }
 
   const renderField = (field, values, path, container) => {
+    if (field.when && String(activeComponentValues?.[field.when.key] ?? '') !== String(field.when.equals ?? '')) return
     if (activeComponentId) {
       const activeEntry = componentEntries.find(item => item.id === activeComponentId)
       if (activeEntry?.name === 'gallery' && field.key === 'dataUrl' && values.mode !== 'url') return
       if (activeEntry?.name === 'gallery' && field.key === 'items' && values.mode === 'url') return
+    }
+
+    if (field.type === 'style-template') {
+      const section = document.createElement('section')
+      section.className = 'mdw-style-template'
+      const heading = document.createElement('div')
+      heading.className = 'mdw-style-template-heading'
+      const title = document.createElement('strong')
+      title.textContent = field.label
+      const copy = document.createElement('button')
+      copy.type = 'button'
+      copy.className = 'mdw-button mdw-button-secondary'
+      copy.textContent = '复制 CSS 模板'
+      const code = document.createElement('pre')
+      const className = String(activeComponentValues?.extraClass || 'my-custom-note').replace(/[^A-Za-z0-9_-]/g, '') || 'my-custom-note'
+      const template = `/* 自定义提示块：将类名 ${className} 填入“自定义样式类名” */\n.note.${className} {\n  /* 卡片背景 */\n  background: rgba(255, 255, 255, 0.88) !important;\n  /* 左侧强调色 */\n  border-left: 5px solid #49b1f5 !important;\n  /* 圆角与内边距 */\n  border-radius: 12px;\n  padding: 16px;\n  /* 阴影；不需要时可删除 */\n  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);\n}\n\n[data-theme='dark'] .note.${className} {\n  /* 深色模式背景 */\n  background: rgba(30, 36, 48, 0.88) !important;\n}`
+      code.textContent = template
+      const help = document.createElement('p')
+      help.className = 'mdw-field-help'
+      help.textContent = '复制到 source/css/md-components.css 后重新部署；网页不会直接执行任意 CSS。'
+      copy.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(template)
+          copy.textContent = '已复制'
+          setTimeout(() => { copy.textContent = '复制 CSS 模板' }, 1600)
+        } catch { announce('复制失败，请手动选择模板内容。', 'error') }
+      })
+      heading.append(title, copy)
+      section.append(heading, code, help)
+      container.append(section)
+      return
     }
 
     if (field.type === 'repeater') {
@@ -708,7 +756,7 @@
       const next = field.type === 'number' ? Number(input.value) : input.value
       setValueAtPath(activeComponentValues, path, next)
       if (field.key === 'template' && mermaidTemplates[next]) activeComponentValues.source = mermaidTemplates[next]
-      if (field.key === 'mode' || field.key === 'template') renderComponentFields()
+      if (field.key === 'mode' || field.key === 'template' || field.key === 'extraPreset') renderComponentFields()
       else updateComponentSourcePreview()
     }
     input.addEventListener(field.type === 'select' ? 'change' : 'input', updateValue)
@@ -727,6 +775,12 @@
       label.append(controls)
     } else label.append(input)
     wrapper.append(label)
+    if (field.help) {
+      const help = document.createElement('p')
+      help.className = 'mdw-field-help'
+      help.textContent = field.help
+      wrapper.append(help)
+    }
     container.append(wrapper)
   }
 
@@ -735,7 +789,21 @@
     const schema = entry && adapter.getSchema(entry.name)
     if (!entry || !schema || !activeComponentValues) return
     elements.componentFields.replaceChildren()
-    schema.fields.forEach(field => renderField(field, activeComponentValues, [field.key], elements.componentFields))
+    const regularFields = schema.fields.filter(field => !field.advanced)
+    const advancedFields = schema.fields.filter(field => field.advanced)
+    regularFields.forEach(field => renderField(field, activeComponentValues, [field.key], elements.componentFields))
+    if (advancedFields.length) {
+      const details = document.createElement('details')
+      details.className = 'mdw-component-advanced'
+      details.open = activeComponentValues.extraPreset === 'custom'
+      const summary = document.createElement('summary')
+      summary.textContent = '高级样式设置'
+      const fields = document.createElement('div')
+      fields.className = 'mdw-component-advanced-fields'
+      advancedFields.forEach(field => renderField(field, activeComponentValues, [field.key], fields))
+      details.append(summary, fields)
+      elements.componentFields.append(details)
+    }
     elements.componentError.hidden = true
     updateComponentSourcePreview()
   }
@@ -747,6 +815,13 @@
     activeComponentId = id
     activeComponentValues = JSON.parse(JSON.stringify(entry.values || adapter.valuesFromEntry(entry)))
     elements.componentDialogTitle.textContent = entry.label
+    if (elements.componentDialogEyebrow) elements.componentDialogEyebrow.textContent = entry.kind === 'markdown-structure' ? 'Markdown 结构' : 'Butterfly 组件'
+    elements.componentDelete.textContent = entry.kind === 'markdown-structure' ? '删除结构块' : '删除组件'
+    elements.componentSave.textContent = entry.kind === 'markdown-structure' ? '保存结构块' : '保存组件'
+    if (elements.componentSourceLabel) elements.componentSourceLabel.textContent = entry.kind === 'markdown-structure' ? '查看将要保存的 Markdown' : '查看将要保存的 Butterfly 语法'
+    if (elements.dialogHelp) elements.dialogHelp.textContent = entry.kind === 'markdown-structure'
+      ? '序号和代码内容分开编辑；保存后会恢复为规范的列表嵌套代码块，避免模式切换破坏结构。'
+      : '每个参数独立编辑；保存后仍生成 Butterfly 原生标签。图片和文件可填入外部地址，也可选择本地文件。'
     renderComponentFields()
     elements.componentDialog.showModal()
   }
