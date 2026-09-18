@@ -1,0 +1,378 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>namespace 与 cgroup | Le Website de CharlieZC</title><meta name="author" content="CharlieZC"><meta name="copyright" content="CharlieZC"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Linux 内核用 namespace 隔离进程可见的资源对象，用 cgroup 限制进程可用的 CPU、内存与设备。二者共同构成共享内核容器的隔离基础。">
+<meta property="og:type" content="website">
+<meta property="og:title" content="namespace 与 cgroup">
+<meta property="og:url" content="https://charliezichen.github.io/a3s-wiki/namespace-cgroup/">
+<meta property="og:site_name" content="Le Website de CharlieZC">
+<meta property="og:description" content="Linux 内核用 namespace 隔离进程可见的资源对象，用 cgroup 限制进程可用的 CPU、内存与设备。二者共同构成共享内核容器的隔离基础。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://charliezichen.github.io/img/avatar.webp">
+<meta property="article:published_time" content="2026-09-18T10:00:00.000Z">
+<meta property="article:modified_time" content="2026-09-18T10:10:00.000Z">
+<meta property="article:author" content="CharlieZC">
+<meta property="article:tag" content="CharlieZC, 学习笔记, Unity, HoloLens 2, 数学, 物理, 法语">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://charliezichen.github.io/img/avatar.webp"><link rel="shortcut icon" href="/img/logo.webp"><link rel="canonical" href="https://charliezichen.github.io/a3s-wiki/namespace-cgroup/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: {"limitDay":365,"position":"top","messagePrev":"本文距上次更新已过去","messageNext":"天，部分内容可能已经过时。"},
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":200},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":200,"languages":{"author":"作者: CharlieZC","link":"链接: ","source":"来源: Le Website de CharlieZC","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'mediumZoom',
+  Snackbar: {"chs_to_cht":"你已切换为繁体中文","cht_to_chs":"你已切换为简体中文","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'namespace 与 cgroup',
+  isPost: false,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-09-18 18:10:00'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+          const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+          const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+          const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+          if (t === undefined) {
+            if (isLightMode) activateLightMode()
+            else if (isDarkMode) activateDarkMode()
+            else if (isNotSpecified || hasNoSupport) {
+              const now = new Date()
+              const hour = now.getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            window.matchMedia('(prefers-color-scheme: dark)').addListener(e => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else if (t === 'light') activateLightMode()
+          else activateDarkMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/site-custom.css"><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="Le Website de CharlieZC" type="application/atom+xml">
+</head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.webp" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">22</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">25</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">8</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="icat_menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><button class="site-page group" type="button" aria-haspopup="true" aria-expanded="false"><i class="fa-fw fas fa-file-text"></i><span> 文章</span><i class="fas fa-chevron-down"></i></button><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间线</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li></ul></div><div class="menus_item"><button class="site-page group" type="button" aria-haspopup="true" aria-expanded="false"><i class="fa-fw fas fa-sitemap"></i><span> 本站</span><i class="fas fa-chevron-down"></i></button><ul class="menus_item_child"><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></li><li><a class="site-page child" href="/pages/"><i class="fa-fw fas fa-file-alt"></i><span> 共享页面</span></a></li><li><a class="site-page child" href="/a3s-wiki/"><i class="fa-fw fas fa-book"></i><span> A3S 百科</span></a></li></ul></div><div class="menus_item"><button class="site-page group" type="button" aria-haspopup="true" aria-expanded="false"><i class="fa-fw fas fa-id-card"></i><span> 我的</span><i class="fas fa-chevron-down"></i></button><ul class="menus_item_child"><li><a class="site-page child" href="/about/"><i class="fa-fw fas fa-info-circle"></i><span> 关于我</span></a></li><li><a class="site-page child" href="/%E5%AE%B6%E4%BA%BA/"><i class="fa-fw fas fa-home"></i><span> 家人</span></a></li></ul></div><div class="menus_item"><button class="site-page group" type="button" aria-haspopup="true" aria-expanded="false"><i class="fa-fw fas fa fa-spinner fa-spin"></i><span> 工具</span><i class="fas fa-chevron-down"></i></button><ul class="menus_item_child"><li><a class="site-page child" href="/%E7%94%B5%E5%AD%90%E6%9C%A8%E9%B1%BC/"><i class="fa-fw fas fa-map-pin"></i><span> 电子木鱼</span></a></li><li><a class="site-page child" href="/%E5%AE%9E%E7%94%A8%E7%BD%91%E7%AB%99/"><i class="fa-fw fas fa-paperclip"></i><span> 实用网站推荐</span></a></li><li><a class="site-page child" href="/md-editor/"><i class="fa-fw fas fa-file-alt"></i><span> Markdown 工作台</span></a></li></ul></div></div></div></div><div class="page" id="body-wrap"><header class="not-top-img nav-fixed fixed" id="page-header"><nav id="nav"><div id="nav-group"><span id="blog-info"><a href="/" title="Le Website de CharlieZC"><img class="site-icon" src="/img/logo.webp"/><span class="site-name">Le Website de CharlieZC</span></a></span><div id="menus"><div class="menus_items"><div class="icat_menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><button class="site-page group" type="button" aria-haspopup="true" aria-expanded="false"><i class="fa-fw fas fa-file-text"></i><span> 文章</span><i class="fas fa-chevron-down"></i></button><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间线</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></li></ul></div><div class="menus_item"><button class="site-page group" type="button" aria-haspopup="true" aria-expanded="false"><i class="fa-fw fas fa-sitemap"></i><span> 本站</span><i class="fas fa-chevron-down"></i></button><ul class="menus_item_child"><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></li><li><a class="site-page child" href="/pages/"><i class="fa-fw fas fa-file-alt"></i><span> 共享页面</span></a></li><li><a class="site-page child" href="/a3s-wiki/"><i class="fa-fw fas fa-book"></i><span> A3S 百科</span></a></li></ul></div><div class="menus_item"><button class="site-page group" type="button" aria-haspopup="true" aria-expanded="false"><i class="fa-fw fas fa-id-card"></i><span> 我的</span><i class="fas fa-chevron-down"></i></button><ul class="menus_item_child"><li><a class="site-page child" href="/about/"><i class="fa-fw fas fa-info-circle"></i><span> 关于我</span></a></li><li><a class="site-page child" href="/%E5%AE%B6%E4%BA%BA/"><i class="fa-fw fas fa-home"></i><span> 家人</span></a></li></ul></div><div class="menus_item"><button class="site-page group" type="button" aria-haspopup="true" aria-expanded="false"><i class="fa-fw fas fa fa-spinner fa-spin"></i><span> 工具</span><i class="fas fa-chevron-down"></i></button><ul class="menus_item_child"><li><a class="site-page child" href="/%E7%94%B5%E5%AD%90%E6%9C%A8%E9%B1%BC/"><i class="fa-fw fas fa-map-pin"></i><span> 电子木鱼</span></a></li><li><a class="site-page child" href="/%E5%AE%9E%E7%94%A8%E7%BD%91%E7%AB%99/"><i class="fa-fw fas fa-paperclip"></i><span> 实用网站推荐</span></a></li><li><a class="site-page child" href="/md-editor/"><i class="fa-fw fas fa-file-alt"></i><span> Markdown 工作台</span></a></li></ul></div></div></div><div id="nav-right"><div id="search-button"><button class="site-page social-icon search" type="button" aria-label="搜索" title="搜索"><i class="fas fa-search fa-fw"></i></button></div><div id="toggle-menu"><button class="site-page" type="button" aria-label="打开菜单" title="打开菜单"><i class="fas fa-bars fa-fw"></i></button></div></div></div></nav></header><main class="layout" id="content-inner"><div id="page"><h1 class="page-title">namespace 与 cgroup</h1><div id="article-container"><h2 id="定义">定义</h2>
+<p>namespace（命名空间）与 cgroup（control group，控制组）是 Linux
+内核提供的两组正交机制。namespace
+决定进程能够<strong>看见</strong>哪些内核对象；cgroup
+决定进程能够<strong>消耗</strong>多少资源。共享内核<a
+href="/a3s-wiki/container/">容器</a>的隔离能力，主要来自这两套机制的组合，而不是来自第二份内核。</p>
+<h2 id="问题背景">问题背景</h2>
+<p>同一台机器上运行多个互不信任或互不影响的程序时，需要同时回答两个问题。</p>
+<p>第一，程序 A 是否应当看见程序 B
+的进程列表、网络接口或文件系统挂载。若完全共享，则保密性与可复现性都无法保证。第二，程序
+A 是否可以占满 CPU
+或耗尽内存。若没有上限，则一台机器上的局部故障会变成整机故障。</p>
+<p>早期 Unix
+主要通过用户身份（UID）与权限位做隔离，粒度粗，也无法给出独立的网络栈或独立的
+PID 空间。Linux 在内核中增加 namespace 与 cgroup
+之后，才可能在不启动虚拟机的前提下，为进程构造近似「独立机器」的运行环境。</p>
+<h2 id="机制说明">机制说明</h2>
+<h3 id="namespace改变可见性">namespace：改变可见性</h3>
+<p>可以把 namespace
+理解成「给进程换一副眼镜」。内核对象仍然只有一份，但不同 namespace
+中的进程看到不同的子集或不同的编号。</p>
+<p>常见类型如下。不必一次记住全部名称，先记住每一类隔离的是什么对象。</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>类型</th>
+<th>隔离对象</th>
+<th>直观效果</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Mount</td>
+<td>挂载表</td>
+<td>容器可以拥有自己的 <code>/</code>，宿主根目录不必被改写</td>
+</tr>
+<tr class="even">
+<td>PID</td>
+<td>进程号空间</td>
+<td>容器内入口进程可以是 PID 1，却不是宿主的 PID 1</td>
+</tr>
+<tr class="odd">
+<td>Network</td>
+<td>网络栈</td>
+<td>独立的网卡、路由表、端口与防火墙规则</td>
+</tr>
+<tr class="even">
+<td>UTS</td>
+<td>主机名与 NIS 域名</td>
+<td>容器可以有自己的 hostname</td>
+</tr>
+<tr class="odd">
+<td>IPC</td>
+<td>System V IPC 与 POSIX 消息队列</td>
+<td>进程间通信对象不与宿主或其他容器共享</td>
+</tr>
+<tr class="even">
+<td>User</td>
+<td>用户与组 ID 的映射</td>
+<td>容器内的 root 可以映射为宿主上的普通用户</td>
+</tr>
+<tr class="odd">
+<td>Cgroup</td>
+<td>cgroup 目录树的视图</td>
+<td>限制进程看见的控制组层级</td>
+</tr>
+</tbody>
+</table>
+<p>「隔离可见性」不等于「再造一份内核」。容器调用
+<code>open</code>、<code>socket</code>、<code>clone</code>
+时，执行这些系统调用的仍然是宿主内核。因此，内核漏洞利用一旦成功，攻击面是整台宿主，而不是单个容器。</p>
+<h3 id="cgroup改变配额">cgroup：改变配额</h3>
+<p>cgroup 把进程放进层级化的组，并对组设置控制器。常见控制器包括：</p>
+<ul>
+<li><code>cpu</code>：限制可用的 CPU 时间比例或带宽；</li>
+<li><code>memory</code>：限制匿名内存与文件缓存，超限时触发回收或
+OOM；</li>
+<li><code>pids</code>：限制可创建的进程数，防止 fork 炸弹；</li>
+<li><code>io</code>：限制块设备读写带宽。</li>
+</ul>
+<p>没有 cgroup，namespace
+只能做到「看不见别人」，做不到「用不完整机」。生产环境中的
+<code>--cpus</code>、<code>--memory</code> 一类参数，最终都要落到 cgroup
+配置。</p>
+<h3 id="二者如何组成一个容器">二者如何组成一个容器</h3>
+<p>一个最小容器启动过程可以抽象为：</p>
+<ol type="1">
+<li>创建一组新的 namespace；</li>
+<li>将该进程移入事先建好的 cgroup；</li>
+<li>在新的 mount namespace 中把 <a href="/a3s-wiki/rootfs/">rootfs</a>
+准备为 <code>/</code>；</li>
+<li>在该环境中执行入口程序。</li>
+</ol>
+<p>此后在同一容器中 <code>exec</code> 出的进程，默认继承同一组 namespace
+与 cgroup，因此看到同一套文件系统与网络，并共享同一份配额。</p>
+<h2 id="在-box-中的位置">在 Box 中的位置</h2>
+<ul>
+<li>Box 的共享内核路径（<code>--isolation sandbox</code>）把 namespace
+与 cgroup 的创建交给 <a href="/a3s-wiki/a3s-ecosystem/">A3S OCI
+Runtime</a>。Box 在产品层记录
+CPU、内存等意图，并在实时更新时通过持久化的运行时代际下发，见
+<code>src/runtime/src/local_execution/</code> 中的资源更新路径。</li>
+<li>CLI 的 <code>a3s-box container-update</code> 以及 SDK 的
+<code>update_resources</code>
+对应「先持久化资源意图，再要求运行时应用到确切
+cgroup」的契约，而不是直接改写宿主 <code>/sys/fs/cgroup</code>。</li>
+<li>MicroVM 路径上，客户机内部仍使用 Linux 的 namespace 与
+cgroup；但宿主与工作负载之间的主边界是硬件虚拟化，而不是宿主
+namespace。二者不可互相替代。</li>
+</ul>
+<h2 id="验证命令">验证命令</h2>
+<p>在 Sandbox 中查看当前进程所属的 cgroup，并与宿主对比：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">a3s-box run --<span class="built_in">rm</span> --isolation sandbox --cpus 1 --memory 256m alpine:3.20 -- \</span><br><span class="line">  sh -lc <span class="string">&#x27;cat /proc/self/cgroup; grep -E &quot;^(MemTotal|MemFree)&quot; /proc/meminfo&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>若主机已准备 OCI Runtime，输出中的 cgroup
+路径与内存总量应反映容器配额，而不是整机容量。</p>
+<h2 id="相关与易混">相关与易混</h2>
+<ul>
+<li>相关：<a href="/a3s-wiki/container/">容器</a>、<a
+href="/a3s-wiki/isolation-levels/">隔离级别对比</a>、<a
+href="/a3s-wiki/sandbox-shared-kernel/">Sandbox（共享内核）</a></li>
+<li>易混：namespace 不提供加密或防侧信道能力；cgroup
+不隔离内核漏洞。把「看见独立的
+<code>/</code>」理解成「拥有独立操作系统」，是最常见的误读。</li>
+</ul>
+</div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="card-info-avatar"><div class="avatar-img"><img src="/img/avatar.webp" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-status-box"><div class="author-status"><g-emoji class="g-emoji" alias="palm_tree" fallback-src="https://lskypro.acozycotage.net/LightPicture/2022/12/fe1dc0402e623096.jpg">🐟</g-emoji><span>认真摸鱼中</span></div></div></div><div class="author-info__name">CharlieZC</div><div class="author-info__description">欢迎来到CharlieZC的网页</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">22</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">25</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">8</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/CharlieZiChen"><i class="fab fa-github"></i><span>Follow me ^_^!</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/CharlieZiChen" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:caozichen2022@126.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">J’espère que mon blog pourra vous aider!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89"><span class="toc-number">1.</span> <span class="toc-text">定义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E8%83%8C%E6%99%AF"><span class="toc-number">2.</span> <span class="toc-text">问题背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%BA%E5%88%B6%E8%AF%B4%E6%98%8E"><span class="toc-number">3.</span> <span class="toc-text">机制说明</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#namespace%E6%94%B9%E5%8F%98%E5%8F%AF%E8%A7%81%E6%80%A7"><span class="toc-number">3.1.</span> <span class="toc-text">namespace：改变可见性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#cgroup%E6%94%B9%E5%8F%98%E9%85%8D%E9%A2%9D"><span class="toc-number">3.2.</span> <span class="toc-text">cgroup：改变配额</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E8%80%85%E5%A6%82%E4%BD%95%E7%BB%84%E6%88%90%E4%B8%80%E4%B8%AA%E5%AE%B9%E5%99%A8"><span class="toc-number">3.3.</span> <span class="toc-text">二者如何组成一个容器</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9C%A8-box-%E4%B8%AD%E7%9A%84%E4%BD%8D%E7%BD%AE"><span class="toc-number">4.</span> <span class="toc-text">在 Box 中的位置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%AA%8C%E8%AF%81%E5%91%BD%E4%BB%A4"><span class="toc-number">5.</span> <span class="toc-text">验证命令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%B8%E5%85%B3%E4%B8%8E%E6%98%93%E6%B7%B7"><span class="toc-number">6.</span> <span class="toc-text">相关与易混</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/11/13/%E7%A7%AF%E5%88%86%E3%80%81%E6%9E%81%E6%95%B0%E4%B8%8E%E5%82%85%E7%AB%8B%E5%8F%B6%E5%8F%98%E6%8D%A2/" title="积分、级数与傅立叶变换">积分、级数与傅立叶变换</a><time datetime="2024-11-13T11:48:30.000Z" title="发表于 2024-11-13 19:48:30">2024-11-13</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/11/05/%E5%A4%A7%E4%B8%89%E4%B8%8AC%E5%A4%8D%E4%B9%A0/" title="大三上C复习">大三上C复习</a><time datetime="2024-11-05T13:59:51.000Z" title="发表于 2024-11-05 21:59:51">2024-11-05</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/09/30/%E7%94%B5%E7%A3%81%E5%AD%A6%E5%9F%BA%E7%A1%80-Chapitre1/" title="电磁学基础 Chapitre1">电磁学基础 Chapitre1</a><time datetime="2024-09-30T00:27:31.000Z" title="发表于 2024-09-30 08:27:31">2024-09-30</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/08/17/python%E9%80%9A%E8%BF%87WebAPI%E5%AE%9E%E7%8E%B0%E5%9C%A8unity%E4%B8%AD%E6%8E%A5%E5%85%A5MySQL%E6%95%B0%E6%8D%AE%E5%BA%93/" title="python通过WebAPI实现在unity中接入MySQL数据库">python通过WebAPI实现在unity中接入MySQL数据库</a><time datetime="2024-08-17T04:08:28.000Z" title="发表于 2024-08-17 12:08:28">2024-08-17</time></div></div></div></div><div class="card-widget card-categories"><div class="item-headline">
+            <i class="fas fa-folder-open"></i>
+            <span>分类</span>
+            
+            </div>
+            <ul class="card-category-list" id="aside-cat-list">
+            <li class="card-category-list-item "><a class="card-category-list-link" href="/categories/hololens2-%E5%BC%80%E5%8F%91/"><span class="card-category-list-name">hololens2 开发</span><span class="card-category-list-count">2</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"><span class="card-category-list-name">学习笔记</span><span class="card-category-list-count">14</span></a><ul class="card-category-list child"><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E5%A4%A7%E4%BA%8C%E4%B8%8A/"><span class="card-category-list-name">大二上</span><span class="card-category-list-count">3</span></a><ul class="card-category-list child"><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E5%A4%A7%E4%BA%8C%E4%B8%8A/%E4%B8%AD%E6%96%87%E7%89%88/"><span class="card-category-list-name">中文版</span><span class="card-category-list-count">2</span></a></li></ul></li></ul></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E5%B0%8F%E9%85%8D%E7%BD%AE/"><span class="card-category-list-name">小配置</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5/"><span class="card-category-list-name">开发实践</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E6%B3%95%E8%AF%AD%E5%AD%A6%E4%B9%A0/"><span class="card-category-list-name">法语学习</span><span class="card-category-list-count">3</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E8%B5%84%E6%BA%90%E5%85%B1%E4%BA%AB/"><span class="card-category-list-name">资源共享</span><span class="card-category-list-count">1</span></a></li>
+            </ul></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2026 By CharlieZC</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">Hi , welcome to my <a href="https://charliezichen.github.io/">blog</a>!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/medium-zoom/dist/medium-zoom.min.js"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><div class="js-pjax"></div><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>let pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+
+  // removeEventListener
+  btf.removeGlobalFnEvent('pjax')
+  btf.removeGlobalFnEvent('themeChange')
+
+  document.getElementById('rightside').classList.remove('rightside-show')
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+  typeof disqusjs === 'object' && disqusjs.destroy()
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+})
+
+document.addEventListener('pjax:error', e => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/404')
+  }
+})</script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>

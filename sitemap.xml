@@ -2,6 +2,267 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://charliezichen.github.io/a3s-wiki/</loc>
+    
+    <lastmod>2026-09-18</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://charliezichen.github.io/a3s-wiki/a3s-ecosystem/</loc>
+    
+    <lastmod>2026-09-18</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://charliezichen.github.io/a3s-wiki/box-crate-map/</loc>
+    
+    <lastmod>2026-09-18</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://charliezichen.github.io/a3s-wiki/box-run-call-chain/</loc>
+    
+    <lastmod>2026-09-18</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://charliezichen.github.io/a3s-wiki/compose/</loc>
+    
+    <lastmod>2026-09-18</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://charliezichen.github.io/a3s-wiki/container-network/</loc>
+    
+    <lastmod>2026-09-18</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://charliezichen.github.io/a3s-wiki/container/</loc>
+    
+    <lastmod>2026-09-18</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://charliezichen.github.io/a3s-wiki/cri/</loc>
+    
+    <lastmod>2026-09-18</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://charliezichen.github.io/a3s-wiki/docker-cli/</loc>
+    
+    <lastmod>2026-09-18</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://charliezichen.github.io/a3s-wiki/dockerfile-build/</loc>
+    
+    <lastmod>2026-09-18</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://charliezichen.github.io/a3s-wiki/execution-manager-router/</loc>
+    
+    <lastmod>2026-09-18</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://charliezichen.github.io/a3s-wiki/generation-fail-closed/</loc>
+    
+    <lastmod>2026-09-18</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://charliezichen.github.io/a3s-wiki/containerd-shim/</loc>
+    
+    <lastmod>2026-09-18</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://charliezichen.github.io/a3s-wiki/isolation-levels/</loc>
+    
+    <lastmod>2026-09-18</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://charliezichen.github.io/a3s-wiki/kubernetes/</loc>
+    
+    <lastmod>2026-09-18</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://charliezichen.github.io/a3s-wiki/libkrun-kvm/</loc>
+    
+    <lastmod>2026-09-18</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://charliezichen.github.io/a3s-wiki/image/</loc>
+    
+    <lastmod>2026-09-18</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://charliezichen.github.io/a3s-wiki/microvm/</loc>
+    
+    <lastmod>2026-09-18</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://charliezichen.github.io/a3s-wiki/namespace-cgroup/</loc>
+    
+    <lastmod>2026-09-18</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://charliezichen.github.io/a3s-wiki/oci/</loc>
+    
+    <lastmod>2026-09-18</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://charliezichen.github.io/a3s-wiki/registry/</loc>
+    
+    <lastmod>2026-09-18</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://charliezichen.github.io/a3s-wiki/sandbox-shared-kernel/</loc>
+    
+    <lastmod>2026-09-18</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://charliezichen.github.io/a3s-wiki/sdk-bridge/</loc>
+    
+    <lastmod>2026-09-18</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://charliezichen.github.io/a3s-wiki/rootfs/</loc>
+    
+    <lastmod>2026-09-18</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://charliezichen.github.io/a3s-wiki/snapshot-commit-diff/</loc>
+    
+    <lastmod>2026-09-18</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://charliezichen.github.io/a3s-wiki/tee-attestation/</loc>
+    
+    <lastmod>2026-09-18</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://charliezichen.github.io/a3s-wiki/volume-mount/</loc>
+    
+    <lastmod>2026-09-18</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://charliezichen.github.io/a3s-wiki/warm-pool-snapshot-fork/</loc>
+    
+    <lastmod>2026-09-18</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://charliezichen.github.io/a3s-wiki/vsock-virtiofs/</loc>
+    
+    <lastmod>2026-09-18</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://charliezichen.github.io/pages/%E6%8F%90%E7%A4%BA%E8%AF%8D/</loc>
     
     <lastmod>2026-08-04</lastmod>
@@ -310,7 +571,7 @@
 
   <url>
     <loc>https://charliezichen.github.io/</loc>
-    <lastmod>2026-08-05</lastmod>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -318,175 +579,175 @@
   
   <url>
     <loc>https://charliezichen.github.io/tags/C/</loc>
-    <lastmod>2026-08-05</lastmod>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://charliezichen.github.io/tags/%E7%BC%96%E7%A8%8B/</loc>
-    <lastmod>2026-08-05</lastmod>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://charliezichen.github.io/tags/%E6%B3%95%E8%AF%AD/</loc>
-    <lastmod>2026-08-05</lastmod>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://charliezichen.github.io/tags/%E8%AF%AD%E6%B3%95/</loc>
-    <lastmod>2026-08-05</lastmod>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://charliezichen.github.io/tags/Unity/</loc>
-    <lastmod>2026-08-05</lastmod>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://charliezichen.github.io/tags/hololens2/</loc>
-    <lastmod>2026-08-05</lastmod>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://charliezichen.github.io/tags/Python/</loc>
-    <lastmod>2026-08-05</lastmod>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://charliezichen.github.io/tags/MySQL/</loc>
-    <lastmod>2026-08-05</lastmod>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://charliezichen.github.io/tags/WebAPI/</loc>
-    <lastmod>2026-08-05</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://charliezichen.github.io/tags/%E4%BF%A1%E5%8F%B7%E5%AD%A6/</loc>
-    <lastmod>2026-08-05</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://charliezichen.github.io/tags/%E7%83%AD%E5%8A%9B%E5%AD%A6/</loc>
-    <lastmod>2026-08-05</lastmod>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://charliezichen.github.io/tags/%E7%BF%BB%E8%AF%91/</loc>
-    <lastmod>2026-08-05</lastmod>
+    <lastmod>2026-09-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://charliezichen.github.io/tags/%E7%83%AD%E5%8A%9B%E5%AD%A6/</loc>
+    <lastmod>2026-09-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://charliezichen.github.io/tags/%E4%BF%A1%E5%8F%B7%E5%AD%A6/</loc>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://charliezichen.github.io/tags/%E5%8C%96%E5%AD%A6/</loc>
-    <lastmod>2026-08-05</lastmod>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://charliezichen.github.io/tags/%E5%8C%96%E5%AD%A6%E5%8F%8D%E5%BA%94/</loc>
-    <lastmod>2026-08-05</lastmod>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://charliezichen.github.io/tags/C/</loc>
-    <lastmod>2026-08-05</lastmod>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://charliezichen.github.io/tags/%E8%AF%BE%E7%A8%8B%E8%B5%84%E6%BA%90/</loc>
-    <lastmod>2026-08-05</lastmod>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://charliezichen.github.io/tags/%E7%89%A9%E7%90%86/</loc>
-    <lastmod>2026-08-05</lastmod>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://charliezichen.github.io/tags/%E6%99%B6%E4%BD%93/</loc>
-    <lastmod>2026-08-05</lastmod>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://charliezichen.github.io/tags/%E5%85%89%E5%AD%A6/</loc>
-    <lastmod>2026-08-05</lastmod>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://charliezichen.github.io/tags/%E5%A4%A7%E4%BA%8C%E4%B8%8A/</loc>
-    <lastmod>2026-08-05</lastmod>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://charliezichen.github.io/tags/%E7%BD%91%E9%A1%B5%E9%85%8D%E7%BD%AE/</loc>
-    <lastmod>2026-08-05</lastmod>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://charliezichen.github.io/tags/%E7%94%B5%E7%A3%81%E5%AD%A6/</loc>
-    <lastmod>2026-08-05</lastmod>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://charliezichen.github.io/tags/%E6%95%B0%E5%AD%A6/</loc>
-    <lastmod>2026-08-05</lastmod>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://charliezichen.github.io/tags/%E5%82%85%E9%87%8C%E5%8F%B6%E5%8F%98%E6%8D%A2/</loc>
-    <lastmod>2026-08-05</lastmod>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://charliezichen.github.io/tags/%E8%AF%8D%E6%B1%87/</loc>
-    <lastmod>2026-08-05</lastmod>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
@@ -495,56 +756,56 @@
   
   <url>
     <loc>https://charliezichen.github.io/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</loc>
-    <lastmod>2026-08-05</lastmod>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://charliezichen.github.io/categories/%E6%B3%95%E8%AF%AD%E5%AD%A6%E4%B9%A0/</loc>
-    <lastmod>2026-08-05</lastmod>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://charliezichen.github.io/categories/hololens2-%E5%BC%80%E5%8F%91/</loc>
-    <lastmod>2026-08-05</lastmod>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://charliezichen.github.io/categories/%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5/</loc>
-    <lastmod>2026-08-05</lastmod>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://charliezichen.github.io/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E5%A4%A7%E4%BA%8C%E4%B8%8A/</loc>
-    <lastmod>2026-08-05</lastmod>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://charliezichen.github.io/categories/%E8%B5%84%E6%BA%90%E5%85%B1%E4%BA%AB/</loc>
-    <lastmod>2026-08-05</lastmod>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://charliezichen.github.io/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E5%A4%A7%E4%BA%8C%E4%B8%8A/%E4%B8%AD%E6%96%87%E7%89%88/</loc>
-    <lastmod>2026-08-05</lastmod>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://charliezichen.github.io/categories/%E5%B0%8F%E9%85%8D%E7%BD%AE/</loc>
-    <lastmod>2026-08-05</lastmod>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
